@@ -27,6 +27,24 @@ type User struct {
 	Password string `json:"password,omitempty"`
 }
 
+// SetupRoutes configure les routes de l'API
+// func SetupRoutes(database *sql.DB) {
+// 	db = database
+
+// 	http.HandleFunc("/register", serveRegisterForm)
+// 	http.HandleFunc("/users", GetUsers)
+// 	http.HandleFunc("/login", login)
+// 	http.HandleFunc("/createUser", createUser)
+// 	http.HandleFunc("/profile", profile)
+// 	http.HandleFunc("/updateProfile", updateProfile)
+// 	http.HandleFunc("/deleteUser", deleteUser)
+// 	http.HandleFunc("/home_connected", homeConnected)
+// 	http.HandleFunc("/createPost", createPost)
+// 	http.HandleFunc("/updatePost", updatePost)
+// 	http.HandleFunc("/deletePost", deletePost)
+// 	http.HandleFunc("/posts", getPosts)
+// }
+
 func serveRegisterForm(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		http.ServeFile(w, r, "web/register.html")
@@ -35,7 +53,7 @@ func serveRegisterForm(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
 }
 
-func getUsers(w http.ResponseWriter, r *http.Request) {
+func GetUsers(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query("SELECT id, name, email FROM users")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -60,7 +78,6 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	/* trunk-ignore(golangci-lint/errcheck) */
 	w.Write(jsonResponse)
 }
 
@@ -335,6 +352,7 @@ func updatePost(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/home_connected?id="+userID, http.StatusSeeOther)
 }
+
 func deletePost(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
