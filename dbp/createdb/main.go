@@ -1,13 +1,21 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
-
+    "balls/dbp"
 	_ "github.com/mattn/go-sqlite3"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 func main() {
+	db, err := gorm.Open(sqlite.Open("balls.db"), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+	db.AutoMigrate(&dbp.User{}, &dbp.Strike{}, &dbp.Swipe{}, &dbp.Stat{})
+}
+
+/* func main() {
 	// Chemin vers la base de données SQLite
 	dbPath := "./example.db"
 
@@ -86,3 +94,4 @@ func main() {
 
 	fmt.Println("Base de données créée avec succès !")
 }
+*/
