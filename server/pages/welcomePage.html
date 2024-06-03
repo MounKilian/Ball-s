@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription</title>
+    <link rel="stylesheet" href="../static/css/register.css">
+    <script>
+        
+    </script>
+</head>
+<body>
+    <div class="header">
+        <h1>BALL'S</h1>
+    </div>
+    <div class="formWelcome">
+        <p>Welcome</p>
+        <input type="date" class="birthday" name="birthday" required>
+        <div class="radio">
+            <label class="homme">Homme</label>
+            <input type="radio" class="genre" name="genre" required>
+            <label class="femme">Femme</label>
+            <input type="radio" class="genre" name="genre" required>
+        </div>
+        <input type="radio" class="sport1">
+        <select name="sport" id="sport-select">
+            <option value="">--Please choose an option--</option>
+            
+        </select>   
+        <div class="sport2">
+            <label for="" class="sport2"></label>
+            <input type="checkbox" class="sport">
+        </div> 
+        
+        <div class="profile-image">
+            <img id="profile-image" src="" alt="Profile Image">
+        </div>
+    
+        <form id="upload-form" method="post" enctype="multipart/form-data">
+            <input type="file" name="image" accept="image/*" id="image-input" />
+            <button type="submit">Upload</button>
+        </form>
+        
+        <input type="submit" class="submit">  
+    </div>
+</body>
+</html>
