@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <h2>Connexion</h2>
-        <form action="/login" method="post">
+        <form onsubmit="return loginUser()">
             <label for="username">Nom d'utilisateur:</label>
             <input type="text" id="username" name="username" required>
             <label for="password">Mot de passe:</label>
@@ -18,5 +18,35 @@
         </form>
         <button onclick="window.location.href='/register'">S'inscrire</button>
     </div>
+
+    <script>
+        function loginUser() {
+            var formData = {
+                username: document.getElementById("username").value,
+                password: document.getElementById("password").value
+            };
+
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur lors de la soumission du formulaire.');
+                }
+                return response.json();
+            }).then(data => {
+                // Gérer la réponse du serveur ici
+                console.log(data);
+            }).catch(error => {
+                console.error('Erreur:', error);
+            });
+
+            // Empêcher le formulaire de se soumettre normalement
+            return false;
+        }
+    </script>
 </body>
 </html>
