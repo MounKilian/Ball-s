@@ -17,9 +17,13 @@ func main() {
     router.Static("/static", "./static")
     
     router.GET("/", func(c *gin.Context) {
-        c.HTML(http.StatusOK, "login.html", nil)
+        c.HTML(http.StatusOK, "home.html", nil)
     })
     
+    router.GET("/login", func(c *gin.Context) {
+        c.HTML(http.StatusOK, "login.html", nil)
+    })
+
     router.GET("/register", func(c *gin.Context) {
         c.HTML(http.StatusOK, "register.html", nil)
     })

@@ -38,13 +38,11 @@
                 }
                 return response.json();
             }).then(data => {
-                // Gérer la réponse du serveur ici
                 console.log(data);
+                window.location.href = '/';
             }).catch(error => {
                 console.error('Erreur:', error);
             });
-
-            // Empêcher le formulaire de se soumettre normalement
             return false;
         }
     </script>
