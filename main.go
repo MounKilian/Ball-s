@@ -2,76 +2,101 @@ package main
 
 import (
 	"balls/dbp"
-	"encoding/json"
 	"fmt"
+	"html/template"
+	"math/rand"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
+	"time"
 )
 
 func main() {
-	r := gin.Default()
-	// db := dbp.DB
-	// user1 := dbp.User{
-	//     Username:    "user1",
-	//     DateOfBirth: time.Now(),
-	// }
-	// user2 := dbp.User{
-	//     Username:    "user2",
-	//     DateOfBirth: time.Now(),
-	// }
-	// db.Create(&user1)
-	// db.Create(&user2)
-
-	r.GET("/", HomePage)
-	r.GET("/users", getAllUsers)
-	r.GET("/user", getUserByID)
-	// r.POST("/login", loginUser)
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
-	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	// addUsers()
+	// addSport()
+	// http.HandleFunc("/", HomePage)
+	// fs := http.FileServer(http.Dir("static"))
+	// http.Handle("/static/", http.StripPrefix("/static/", fs))
+	// http.ListenAndServe(":8080", nil)
+	sort()
 }
 
-// func loginUser(cgin.Context) {
-//     type login struct{
-//         NameOrMail string json:"name_or_mail"
-//         Password   string json:"password"
-//     }
-//     loginData := login{}
-//     c.Bind(&loginData)
-//     db := dbp.DB
-//     user := &dbp.User{}
-//     db.Where(&dbp.User{Username: loginData.NameOrMail}).Or(&dbp.User{Email: loginData.NameOrMail}).Where(&dbp.User{Password: user.Password}).First(user)
-// }
-
-func HomePage(c *gin.Context) {
-
-}
-
-func getUserByID(c *gin.Context) {
-	db := dbp.DB
-	id, err := c.GetQuery("id")
-	if !err {
-		fmt.Fprintln(c.Writer, "Id not provided in get request")
+func HomePage(w http.ResponseWriter, r *http.Request) {
+	template, err := template.ParseFiles("./template/homePage.html")
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-	user := &dbp.User{}
-	tx := db.First(user, id)
+	template.Execute(w, nil)
+}
+
+func addSport() {
+	db := dbp.DB
+	// stat := dbp.Stat{
+	// 	ID: 1,
+	// 	Name: "",
+	// }
+	// user2 := dbp.User{
+	// 	Username:    "user2",
+	// 	DateOfBirth: time.Now(),
+	// }
+	// db.Create(&user1)
+	for _, v := range []string{"Football", "Basketball", "Tenis", "baseball", "Volley", "Pingpong", "Golf", "Natation", "Bowling", "Escalade", "Cyclisme", "Sauts", "Plongée", "Acrobranches", "tyroliènne", "Course", "Musculation"} {
+
+		db.Create(&dbp.Stat{Name: v})
+	}
+	// db.Create(&stat)
+}
+
+func addUsers() {
+
+	last := &dbp.User{}
+	tx := dbp.DB.Last(last)
 	if tx.RowsAffected > 0 {
-		result, _ := json.Marshal(user)
-		fmt.Fprintln(c.Writer, string(result))
+		fmt.Println("last ID :", last.ID)
 	} else {
-		fmt.Fprintln(c.Writer, "User not found")
+		last.ID = 0
+	}
+
+	for i := 0; i < 50; i++ {
+		db := dbp.DB
+		sportid := rand.Intn(17)
+		cityrand := rand.Intn(2)
+		var cityname string
+		if cityrand == 0 {
+			cityname = "paris"
+		} else {
+			cityname = "Lyon"
+		}
+		user := dbp.User{
+			Username:    "User",
+			DateOfBirth: time.Now(),
+			SportID:     sportid,
+			City:        cityname,
+		}
+
+		db.Create(&user)
+
 	}
 }
 
-func getAllUsers(c *gin.Context) {
+func sort() {
 	db := dbp.DB
 	users := []dbp.User{}
 	db.Find(&users, &dbp.User{})
-	result, _ := json.Marshal(&users)
-	fmt.Fprintln(c.Writer, string(result))
+	startUser := rand.Intn(50)
+	var potential []dbp.User
+	for i := 0; i < len(users); i++ {
+		if users[startUser].City == users[i].City && i != startUser {
+			if users[startUser].SportID == users[i].SportID {
+				potential = append(potential, users[i])
+			}
+		}
+	}
+	// result, _ := json.Marshal(&users)
+	// resultpot, _ := json.Marshal((&potential))
+	fmt.Println(users[startUser].ID)
+	fmt.Println("potential")
+	for i := 0; i < len(potential); i++ {
+		fmt.Println(potential[i].ID)
+	}
 }
