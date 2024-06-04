@@ -16,11 +16,11 @@ func main() {
 
 	router.Static("/static", "./static")
 
-	router.GET("/", func(c *gin.Context) {
+	router.GET("/login", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "login.html", nil)
 	})
 
-	router.GET("/home", func(c *gin.Context) {
+	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "home.html", nil)
 	})
 
@@ -72,7 +72,15 @@ func main() {
 			return
 		}
 
-		c.SetCookie("user_id", userID, 3600, "/", "localhost", false, true)
+		// Création d'un cookie avec l'ID utilisateur
+		cookie := &http.Cookie{
+			Name:     "user_id",
+			Value:    userID,
+			Path:     "/",
+			HttpOnly: true,
+			MaxAge:   3600, // Durée de vie du cookie en secondes (1 heure ici)
+		}
+		http.SetCookie(c.Writer, cookie)
 
 		c.JSON(http.StatusOK, gin.H{"message": "Authentification réussie"})
 	})
