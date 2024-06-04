@@ -19,13 +19,12 @@ func main() {
 
 	router.Static("/static", "./static")
 
-	router.GET("/", func(c *gin.Context) {
-		sort()
-		c.HTML(http.StatusOK, "home.html", nil)
-	})
-
 	router.GET("/login", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "login.html", nil)
+	})
+
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "home.html", nil)
 	})
 
 	router.GET("/register", func(c *gin.Context) {
@@ -65,9 +64,9 @@ func main() {
 			return
 		}
 
-		isAuthenticated, err := dbp.AuthenticateUser(user.Username, user.Password)
+		userID, isAuthenticated, err := dbp.AuthenticateUser(user.Username, user.Password)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur lors de l'authentification de l'utilisateur"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -75,6 +74,16 @@ func main() {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Nom d'utilisateur ou mot de passe incorrect"})
 			return
 		}
+
+		// Création d'un cookie avec l'ID utilisateur
+		cookie := &http.Cookie{
+			Name:     "user_id",
+			Value:    userID,
+			Path:     "/",
+			HttpOnly: true,
+			MaxAge:   3600, // Durée de vie du cookie en secondes (1 heure ici)
+		}
+		http.SetCookie(c.Writer, cookie)
 
 		c.JSON(http.StatusOK, gin.H{"message": "Authentification réussie"})
 	})
