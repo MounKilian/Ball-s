@@ -8,52 +8,61 @@ html {
     margin: 0;
 }
 
-.bg-image {
-    /* The image used */
-    background-color: white;
-    
-    
-    /* Full height */
-    height: 100%;
-    
-    /* Center and scale the image nicely
-    background-position: ;
-    background-repeat: ;
-    background-size: ; */
+body {
+    overflow: hidden;
+    display: flex;
+    align-items: center;
 }
-.bg-image > img {
-    /* opacity: 0.9; */
+
+.bg-image {
+    position: absolute;
+    /* The image used */
+    background-color: black;
+
+    /* Full height/width */
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.bg-image>img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
     object-fit: cover;
-    object-position: center ;
+    object-position: center;
 
     /* Add the blur effect */
     filter: blur(1.5rem);
     -webkit-filter: blur(1.5rem);
 }
 
-/* #bg-image {
-    height: 100%;
-    width: 100%;
-    background: top /cover url(../images/avatar.png);
-    filter: blur(1.5rem);
-} */
+.card {
+    background: center/cover white;
+    width: 30%;
+    height: 90%;
+}
 
-#profile {
-    position: absolute;
-    width: 152px;
-    height: 162px;
-    left: 66px;
-    top: 33px;
-    background: center / cover url("../images/avatar.png");
+.button {
+    position: relative;
+    width: 13%;
+    /* top: 33px; */
+}
+
+.button:after {
+    content: "";
+    display: block;
+    padding-bottom: 100%;
     border-radius: 50%;
 }
 
+#profile {
+    left: 66px;
+    background: center / cover url("../images/avatar.png");
+}
+
 #msg {
-    position: absolute;
-    width: 162px;
-    height: 162px;
     right: 66px;
-    top: 33px;
     background: center / 65% no-repeat url("../images/msg.png"), white;
-    border-radius: 50%;
 }
