@@ -47,7 +47,7 @@ body {
 .button {
     position: relative;
     width: 13%;
-    /* top: 33px; */
+    top: 33px;
 }
 
 .button:after {
