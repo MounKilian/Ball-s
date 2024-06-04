@@ -3,9 +3,7 @@ package main
 import (
 	"balls/dbp"
 	"fmt"
-	"html/template"
 	"math/rand"
-	"net/http"
 	"time"
 )
 
@@ -17,16 +15,6 @@ func main() {
 	// http.Handle("/static/", http.StripPrefix("/static/", fs))
 	// http.ListenAndServe(":8080", nil)
 	sort()
-}
-
-func HomePage(w http.ResponseWriter, r *http.Request) {
-	template, err := template.ParseFiles("./template/homePage.html")
-	if err != nil {
-		fmt.Println(err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-	template.Execute(w, nil)
 }
 
 func addSport() {
