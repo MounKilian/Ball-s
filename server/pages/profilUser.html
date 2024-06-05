@@ -17,13 +17,17 @@
         <img class="ball" src="../static/image/ball.svg" alt="sportPicture">
            
         <div class="rightcore">
-            <p class="Username">Username: {{.Username}}</p>     
-            <p class="biography">biography: {{.Biography}}</p>            
+            <p class="Username">{{.Username}}</p>     
+            <p class="biography">{{.Biography}}</p>            
         </div>
     </div>
-        <p>location : </p>
-        <p>other sport : </p>
-        <a href="/modifie">modifie</a>
+    <div class="down">
+        <div class="writing">
+            <p>location : {{.City}} </p>
+            <p>other sport : no other sport</p>
+        </div>
+        <a href="/modifie" class="modifie"><button class="button">modify</button></a>
+    </div>
     
 </body>
 </html>

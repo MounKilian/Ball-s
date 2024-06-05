@@ -181,7 +181,7 @@ func profileUser(c *gin.Context) {
 			Catégories: "triple champion du monde",
 		},
 		DateOfBirth: time.Now(),
-		City:        "Lyon",
+		City:        "69420",
 	}
 
 	c.HTML(http.StatusOK, "profilUser.html", user)
