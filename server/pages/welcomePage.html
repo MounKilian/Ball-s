@@ -70,6 +70,42 @@
                 otherSport.appendChild(div)
             }
         })
+
+        function getCookie(name) {
+            const regex = new RegExp(`(?:^|;\\s*)${name}=([^;]*)`);
+            const match = regex.exec(document.cookie);
+            return match ? match[1].replace(/\s+/g, '') : null;
+        }
+
+        const formImg = document.getElementById('upload-form');
+        const inputFile = document.getElementById('image-input');
+
+        formImg.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const formData = new FormData(formImg);
+
+        const id = getCookie("user_id");
+        const url = `http://localhost:8081/uploadImg?id=` + encodeURIComponent(id);
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Network response was not ok: ${errorText}`);
+            }
+
+            const result = await response.json();
+            const imgElement = document.getElementById('profile-image');
+            imgElement.src = result.image;
+
+            } catch (error) {
+                console.error('Error uploading image:', error);
+            }
+        });
     </script>
 </body>
 </html>
