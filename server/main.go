@@ -81,10 +81,11 @@ func main() {
 
 		// Création d'un cookie avec l'ID utilisateur
 		cookie := &http.Cookie{
-			Name:  "user_id",
-			Value: userID,
+			Name:     "user_id",
+			Value:    userID,
+			SameSite: http.SameSiteStrictMode,
 			// 	HttpOnly: true,
-			// 	MaxAge:   3600, // Durée de vie du cookie en secondes (1 heure ici)
+			MaxAge: 3600, // Durée de vie sdu cookie en secondes (1 heure ici)
 		}
 		http.SetCookie(c.Writer, cookie)
 
