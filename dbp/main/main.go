@@ -4,7 +4,10 @@ import (
 	"balls/dbp"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -20,6 +23,7 @@ func main() {
 	router.GET("/users", getAllUsers)
 	router.GET("/user", getUserByID)
 	router.GET("/sports", getAllSports)
+	router.POST("/uploadImg", UploadImg)
 
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
@@ -65,4 +69,48 @@ func getAllSports(c *gin.Context) {
 	db.Find(&sports, []dbp.Stat{})
 	result, _ := json.Marshal(&sports)
 	fmt.Fprintln(c.Writer, string(result))
+}
+
+func UploadImg(c *gin.Context) {
+	db := dbp.DB
+
+	file, handler, err := c.Request.FormFile("image")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Error getting form file: %v", err)})
+		log.Printf("Error getting form file: %v", err)
+		return
+	}
+	defer file.Close()
+
+	dstDir := "static/img/"
+	if _, err := os.Stat(dstDir); os.IsNotExist(err) {
+		if err := os.MkdirAll(dstDir, os.ModePerm); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Error creating directory: %v", err)})
+			log.Printf("Error creating directory: %v", err)
+			return
+		}
+	}
+
+	dstPath := fmt.Sprintf("%s%s", dstDir, handler.Filename)
+	dst, err := os.Create(dstPath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Error creating file: %v", err)})
+		log.Printf("Error creating file: %v", err)
+		return
+	}
+	defer dst.Close()
+
+	_, err = io.Copy(dst, file)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Error copying file: %v", err)})
+		log.Printf("Error copying file: %v", err)
+		return
+	}
+
+	userId := c.Query("id")
+
+	_ = db.Exec("UPDATE users SET image = ? WHERE id = ?", dstPath, userId)
+
+	c.JSON(http.StatusCreated, gin.H{"image": dstPath})
+	log.Printf("Successfully uploaded image: %s", dstPath)
 }
