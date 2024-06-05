@@ -13,6 +13,8 @@
     <div class="formWelcome">
         <p>Welcome</p>
 
+        <form method="POST" id="main-form">
+
         <input type="date" class="birthday" name="birthday" required>
 
         <div class="radio">
@@ -34,13 +36,14 @@
         <div class="profile-image">
             <img id="profile-image" src="" alt="Profile Image">
         </div>
+    </form>
     
-        <form id="upload-form" method="post" enctype="multipart/form-data">
-            <input type="file" name="image" accept="image/*" id="image-input" required />
-            <button type="submit">Upload</button>
-        </form>
-        
-        <input type="submit" class="submit">  
+    <form id="upload-form" method="post" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*" id="image-input" required />
+        <button type="submit">Upload</button>
+    </form>
+    
+    <input for="main-form" type="submit" class="submitFin">  
     </div>
     <script>
         fetch('http://localhost:8081/sports', {
@@ -104,6 +107,37 @@
 
             } catch (error) {
                 console.error('Error uploading image:', error);
+            }
+        });
+
+        const mainForm = document.getElementById('main-form');
+        const submitButton = document.querySelector('.submitFin');
+
+        submitButton.addEventListener('click', async function(event) {
+            console.log("coucou")
+            event.preventDefault();
+            const formData = new FormData(mainForm);
+            const imgElement = document.getElementById('profile-image');
+            formData.append('image', imgElement.src);
+            const id = getCookie("user_id");
+            const url = `http://localhost:8081/welcomeForm?id=` + encodeURIComponent(id);
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Network response was not ok: ${errorText}`);
+                }
+
+                const result = await response.json();
+                console.log('Form submitted successfully:', result);
+
+            } catch (error) {
+                console.error('Error submitting form:', error);
             }
         });
     </script>

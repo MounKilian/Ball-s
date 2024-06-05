@@ -24,6 +24,7 @@ func main() {
 	router.GET("/user", getUserByID)
 	router.GET("/sports", getAllSports)
 	router.POST("/uploadImg", UploadImg)
+	router.POST("/welcomeForm", WelcomeForm)
 
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
@@ -113,4 +114,34 @@ func UploadImg(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{"image": dstPath})
 	log.Printf("Successfully uploaded image: %s", dstPath)
+}
+
+func WelcomeForm(c *gin.Context) {
+	db := dbp.DB
+
+	birthday := c.PostForm("birthday")
+	// genre := c.PostForm("genre")
+	sport := c.PostForm("sport")
+	profilePicture := c.PostForm("image")
+	userId := c.Query("id")
+
+	var selectedSports []string
+	if sports, exists := c.Request.PostForm["sports"]; exists {
+		selectedSports = sports
+	} else {
+		selectedSports = []string{}
+	}
+
+	sportsList := ""
+	if len(selectedSports) > 0 {
+		sportsList = fmt.Sprintf("%s", selectedSports[0])
+		for i := 1; i < len(selectedSports); i++ {
+			sportsList += fmt.Sprintf(",%s", selectedSports[i])
+		}
+	}
+
+	_ = db.Exec("UPDATE users SET date_of_birth = ?, sport_id = ?, image = ? WHERE id = ?", birthday, sport, profilePicture, userId)
+
+	c.JSON(http.StatusOK, gin.H{"message": "User information updated successfully"})
+	log.Printf("User information updated successfully: %s", userId)
 }
