@@ -23,11 +23,6 @@ func main() {
 
 	router.Static("/static", "./static")
 
-	router.GET("/", func(c *gin.Context) {
-		// sort()
-		c.HTML(http.StatusOK, "home.html", nil)
-	})
-
 	router.GET("/login", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "login.html", nil)
 	})
