@@ -30,7 +30,7 @@
     top: 23%;
     left: 1%;
     right: 1%;
-    max-width: 100%;
+    max-width: 98%;
     height: 60%;
     display: flex;
     align-items: flex-start;
@@ -87,7 +87,7 @@
     flex-shrink: 1;
     flex-basis: auto    ;
     top: 1%;
-    /* max-width: 50%; */
+    max-width: 49%;
     height: auto;
     display: flex;
     left: 15%;
@@ -102,7 +102,8 @@
 .down{
     position: fixed;
     white-space: nowrap;
-    background-color: violet;
+    /* background-color: violet; */
+    background-color: transparent;
     top: 83%;
     left: 1%;
     width: 98%;
@@ -118,6 +119,7 @@
     height: 80%; 
     /* left: 50%; */
     margin: auto;
+    background-color: transparent;
     /* background-color: blueviolet; */
 }
 
@@ -133,7 +135,8 @@
 .writing {
     position: relative;
     width: 20%;
-    background-color: chocolate;
+    background-color: transparent;
+    /* background-color: chocolate; */
     /* left: 10%; */
 }
 
@@ -180,7 +183,7 @@
         flex-grow: 0;
         top: 0%;
         right: 5%;
-        max-width: 60%;
+        max-width: 49%;
         max-height: 50%;
         display: flex;
         flex-grow: 1;
@@ -213,7 +216,7 @@
     margin-left: 0;
     margin-right: 0;
     letter-spacing: 0.1em;
-    font-size: 1.9vw;
+    font-size: 3.5vh;
     overflow-wrap: break-word;
     word-wrap: break-word;
     /* background-color: rgb(0, 208, 255) */
