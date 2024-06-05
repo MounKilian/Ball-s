@@ -12,6 +12,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// func main() {
+// 	addSport()
+// }
+
 func main() {
 	router := gin.Default()
 
@@ -20,7 +24,7 @@ func main() {
 	router.Static("/static", "./static")
 
 	router.GET("/", func(c *gin.Context) {
-		sort()
+		// sort()
 		c.HTML(http.StatusOK, "home.html", nil)
 	})
 
@@ -79,6 +83,10 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"message": "Authentification réussie"})
 	})
 
+	router.GET("/form", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "welcomePage.html", nil)
+	})
+
 	if err := router.Run(":8080"); err != nil {
 		log.Fatal(err)
 	}
@@ -95,7 +103,7 @@ func addSport() {
 	// 	DateOfBirth: time.Now(),
 	// }
 	// db.Create(&user1)
-	for _, v := range []string{"Football", "Basketball", "Tenis", "baseball", "Volley", "Pingpong", "Golf", "Natation", "Bowling", "Escalade", "Cyclisme", "Sauts", "Plongée", "Acrobranches", "tyroliènne", "Course", "Musculation"} {
+	for _, v := range []string{"Football", "Basketball", "Tennis", "Baseball", "Surf", "Volley", "Pingpong", "Golf", "Natation", "Rugby", "Bowling", "Handball", "Escalade", "Cyclisme", "Sauts", "Plongée", "Acrobranche", "Tyroliènne", "Course", "Musculation", "Randonnée", "Paddle", "Acrobranche", "Ski", "Boxe", "MMA", "Kapoera", "Pétanque", "Gymnastique", "Danse", "Karting", "Paintball", "Judo", "Karaté", "Escrime", "Ultimate", "LaserGame", "Je ne fait pas que du sport"} {
 
 		db.Create(&dbp.Stat{Name: v})
 	}
