@@ -8,19 +8,22 @@
 </head>
 <body>
     <div class="banner">
-        <a href="/"><div class="circleblack"><img src="../static/image/backarrow.svg" alt="backarrow"></div></a>
-        <H1 class="title">BALL'S</H1>
+        <a href="/"><img class="backarrow" src="../static/image/wholecirclearrowgigacombowowamazingreallycool.png" alt="backarrow"></a>
+        <p class="title">BALL'S</p>
     </div>
-    <div>
-        <img src="" alt="your profile picture">
-        <div>
-            <img src="" alt="sportPicture">
-            <p>Username</p>
-            <p>biographie</p>
+    <div class="core">
+
+        <img class="profilePicture" src="../static/image/{{.Image}}" alt="your profile picture">
+        <img class="ball" src="../static/image/ball.svg" alt="sportPicture">
+           
+        <div class="rightcore">
+            <p class="Username">Username: {{.Username}}</p>     
+            <p class="biography">biography: {{.Biography}}</p>            
         </div>
+    </div>
         <p>location : </p>
         <p>other sport : </p>
         <a href="/modifie">modifie</a>
-    </div>
+    
 </body>
 </html>
