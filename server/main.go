@@ -96,6 +96,10 @@ func main() {
 		c.HTML(http.StatusOK, "welcomePage.html", nil)
 	})
 
+	router.GET("/account", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "accountPage.html", nil)
+	})
+
 	if err := router.Run(":8080"); err != nil {
 		log.Fatal(err)
 	}

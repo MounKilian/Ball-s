@@ -25,6 +25,7 @@ func main() {
 	router.GET("/sports", getAllSports)
 	router.POST("/uploadImg", UploadImg)
 	router.POST("/welcomeForm", WelcomeForm)
+	router.POST("/accountForm", AccountForm)
 
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
@@ -141,6 +142,48 @@ func WelcomeForm(c *gin.Context) {
 	}
 
 	_ = db.Exec("UPDATE users SET date_of_birth = ?, sport_id = ?, image = ? WHERE id = ?", birthday, sport, profilePicture, userId)
+
+	c.JSON(http.StatusOK, gin.H{"message": "User information updated successfully"})
+	log.Printf("User information updated successfully: %s", userId)
+}
+
+func AccountForm(c *gin.Context) {
+	db := dbp.DB
+	userId := c.Query("id")
+
+	user := &dbp.User{}
+	tx := db.First(user, userId)
+	if tx.RowsAffected > 0 {
+		result, _ := json.Marshal(user)
+		fmt.Fprintln(c.Writer, string(result))
+	} else {
+		fmt.Fprintln(c.Writer, "User not found")
+	}
+
+	username := c.PostForm("username")
+	// username = if(username == "", user.Name, username)
+	email := c.DefaultPostForm("email", user.Email)
+	// location := c.DefaultPostForm("location", user.)
+	biography := c.DefaultPostForm("biography", user.Biography)
+	sport := c.DefaultPostForm("sport", user.Sport.Name)
+	profilePicture := c.DefaultPostForm("image", user.Image)
+
+	var selectedSports []string
+	if sports, exists := c.Request.PostForm["sports"]; exists {
+		selectedSports = sports
+	} else {
+		selectedSports = []string{}
+	}
+
+	sportsList := ""
+	if len(selectedSports) > 0 {
+		sportsList = fmt.Sprintf("%s", selectedSports[0])
+		for i := 1; i < len(selectedSports); i++ {
+			sportsList += fmt.Sprintf(",%s", selectedSports[i])
+		}
+	}
+
+	_ = db.Exec("UPDATE users SET username = ?, email = ?, biography = ?, sport_id = ?, image = ? WHERE id = ?", username, email, biography, sport, profilePicture, userId)
 
 	c.JSON(http.StatusOK, gin.H{"message": "User information updated successfully"})
 	log.Printf("User information updated successfully: %s", userId)
