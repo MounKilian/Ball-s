@@ -18,8 +18,8 @@ func main() {
 	for i := last.ID; i < 5000; i++ {
 		time.Sleep(1 * time.Second)
 
-		dbp.RegisterUser("Test : "+fmt.Sprint(i), "test"+fmt.Sprint(i)+"@test.com", "test")
-		fmt.Println("ID :", i)
+		err := dbp.RegisterUser("Test : "+fmt.Sprint(0), "test"+fmt.Sprint(i)+"@test.com", "test")
+		fmt.Println("ID :", i, "error :", err)
 	}
 	// CloneDb("test")
 }
