@@ -18,7 +18,7 @@ import (
 
 func main() {
 	router := gin.Default()
-	sort()
+	// sort()
 	router.LoadHTMLGlob("pages/*.html")
 
 	router.Static("/static", "./static")
