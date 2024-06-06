@@ -21,7 +21,7 @@ func main() {
 	// usertosortfrom := rand.Intn(len(users))
 	// sort(users[usertosortfrom])
 	router := gin.Default()
-
+	// sort()
 	router.LoadHTMLGlob("pages/*.html")
 	router.Static("/static", "./static")
 
@@ -34,7 +34,9 @@ func main() {
 		c.HTML(http.StatusOK, "home.html", nil)
 	})
 
-	router.GET("/profilUser", profileUser)
+	router.GET("/profilUser", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "profilUser.html", nil)
+	})
 
 	router.GET("/register", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "register.html", nil)
@@ -115,11 +117,9 @@ func handleLogin(c *gin.Context) {
 
 		// Création d'un cookie avec l'ID utilisateur
 		cookie := &http.Cookie{
-			Name:     "user_id",
-			Value:    userID,
-			SameSite: http.SameSiteStrictMode,
-			// 	HttpOnly: true,
-			MaxAge: 3600, // Durée de vie sdu cookie en secondes (1 heure ici)
+			Name:   "user_id",
+			Value:  userID,
+			MaxAge: 3600,
 		}
 		http.SetCookie(c.Writer, cookie)
 
@@ -128,6 +128,10 @@ func handleLogin(c *gin.Context) {
 
 	router.GET("/form", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "welcomePage.html", nil)
+	})
+
+	router.GET("/account", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "accountPage.html", nil)
 	})
 
 	if err := router.Run(":8080"); err != nil {
@@ -155,7 +159,6 @@ func addSport() {
 }
 
 func addUsers() {
-
 	last := &dbp.User{}
 	tx := dbp.DB.Last(last)
 	if tx.RowsAffected > 0 {
@@ -208,54 +211,22 @@ func addSwipe() {
 
 	db := dbp.DB
 	users := []dbp.User{}
-	swipes := []int{}
+	swiped := []int64{}
 
-	db.Find(&swipes, &dbp.Swipe{})
-	db.Find(&users)
+	db.Not(&swiped).Find(&users)
 
-	for f := 0; f < len(users); f++ {
-
-		var potential []dbp.User
-		potential = nil
-		for i := 0; i < len(users); i++ {
-			if users[f].City == users[i].City && users[i].ID != users[f].ID {
-				if users[f].Sport == users[i].Sport && users[f].DesiredGender == users[i].Gender {
-					potential = append(potential, users[i])
-				}
-			}
-		}
-
-		rand.Seed(time.Now().UnixNano())
-		rand.Shuffle(len(potential), func(i, j int) { potential[i], potential[j] = potential[j], potential[i] })
-		// result, _ := json.Marshal(&users)
-		// resultpot, _ := json.Marshal((&potential))
-
-		swipe := dbp.Swipe{
-			UserAID: int(users[f].ID),
-			UserA:   users[f],
-			UserBID: int(potential[0].ID),
-			UserB:   potential[0],
-		}
-		db.Create(&swipe)
-
+	if len(users) == 0 {
+		fmt.Println("No users found")
+		return
 	}
-}
 
-func sort(startUser dbp.User) []dbp.User {
-	db := dbp.DB
-	users := []dbp.User{}
-	swipes := []int{}
-	db.Model(&dbp.Swipe{}).Where(&dbp.Swipe{UserAID: int(startUser.ID)}).Pluck("user_b_id", &swipes)
-
-	db.Not(swipes).Find(&users)
-
-	fmt.Println(swipes)
-
+	rand.Seed(time.Now().UnixNano())
+	startUser := rand.Intn(len(users))
 	var potential []dbp.User
 
 	for i := 0; i < len(users); i++ {
-		if startUser.City == users[i].City && users[i].ID != startUser.ID {
-			if startUser.Sport == users[i].Sport && startUser.DesiredGender == users[i].Gender {
+		if users[startUser].City == users[i].City && i != startUser {
+			if users[startUser].Sport == users[i].Sport {
 				potential = append(potential, users[i])
 			}
 		}
@@ -271,121 +242,4 @@ func sort(startUser dbp.User) []dbp.User {
 		fmt.Println(potential[i].ID)
 	}
 	return potential
-}
-
-func profileUser(c *gin.Context) {
-	user := dbp.User{
-		Username:    "username",
-		Email:       "email@email.com",
-		Password:    "Password",
-		Image:       "uglyprofilpic.png",
-		Biography:   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
-		Sport:       "Football",
-		DateOfBirth: time.Now(),
-		City:        "69420",
-	}
-
-	c.HTML(http.StatusOK, "profilUser.html", user)
-}
-
-func sort(startUser dbp.User) []dbp.User {
-	db := dbp.DB
-	var users []dbp.User
-	var swipes []int
-
-	db.Select("user_b_id").Find(&swipes, &dbp.Swipe{UserAID: int(startUser.ID)})
-	db.Not(swipes).Find(&users)
-
-	var potential []dbp.User
-	for _, user := range users {
-		if startUser.City == user.City && startUser.Sport == user.Sport && startUser.DesiredGender == user.Gender && user.ID != startUser.ID {
-			potential = append(potential, user)
-		}
-	}
-
-	rand.Shuffle(len(potential), func(i, j int) { potential[i], potential[j] = potential[j], potential[i] })
-
-	return potential
-}
-
-func addSport() {
-	db := dbp.DB
-	sports := []string{
-		"Football", "Basketball", "Tennis", "Baseball", "Surf", "Volley",
-		"Pingpong", "Golf", "Natation", "Rugby", "Bowling", "Handball",
-		"Escalade", "Cyclisme", "Sauts", "Plongée", "Acrobranche",
-		"Tyroliènne", "Course", "Musculation", "Randonnée", "Paddle",
-		"Acrobranche", "Ski", "Boxe", "MMA", "Kapoera", "Pétanque",
-		"Gymnastique", "Danse", "Karting", "Paintball", "Judo", "Karaté",
-		"Escrime", "Ultimate", "LaserGame", "Je ne fait pas que du sport",
-	}
-
-	for _, sport := range sports {
-		db.Create(&dbp.Stat{Name: sport})
-	}
-}
-
-func addUsers() {
-	last := &dbp.User{}
-	tx := dbp.DB.Last(last)
-	if tx.RowsAffected > 0 {
-		fmt.Println("last ID :", last.ID)
-	} else {
-		last.ID = 0
-	}
-
-	for i := 0; i < 300; i++ {
-		db := dbp.DB
-		sport := &dbp.Stat{ID: uint(rand.Intn(17))}
-		db.First(&sport, sport.ID)
-		cityname := "paris"
-		if rand.Intn(2) == 1 {
-			cityname = "Lyon"
-		}
-		gender := "men"
-		if rand.Intn(2) == 1 {
-			gender = "women"
-		}
-		genderpref := "men"
-		if rand.Intn(2) == 1 {
-			genderpref = "women"
-		}
-		user := dbp.User{
-			Username:      fmt.Sprintf("User%d", last.ID+uint(i)+1),
-			DateOfBirth:   time.Now(),
-			Sport:         sport.Name,
-			Gender:        gender,
-			DesiredGender: genderpref,
-			City:          cityname,
-		}
-		db.Create(&user)
-	}
-}
-
-func addSwipe() {
-	db := dbp.DB
-	var users []dbp.User
-	var swipes []int
-
-	db.Find(&users)
-
-	startUser := users[0]
-
-	db.Select("user_b_id").Find(&swipes, &dbp.Swipe{UserAID: int(startUser.ID)})
-	db.Not(swipes).Find(&users)
-
-	var potential []dbp.User
-	for _, user := range users {
-		if startUser.City == user.City && startUser.Sport == user.Sport && startUser.DesiredGender == user.Gender && user.ID != startUser.ID {
-			potential = append(potential, user)
-		}
-	}
-
-	rand.Shuffle(len(potential), func(i, j int) { potential[i], potential[j] = potential[j], potential[i] })
-
-	fmt.Println("Start User ID:", startUser.ID)
-	fmt.Println("Potential Matches:")
-	for _, user := range potential {
-		fmt.Println(user.ID)
-	}
 }

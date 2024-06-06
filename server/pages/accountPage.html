@@ -4,25 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription</title>
-    <link rel="stylesheet" href="../static/css/welcomepage.css">
+    <link rel="stylesheet" href="../static/css/accountpage.css">
 </head>
 <body>
     <div class="header">
         <h1>BALL'S</h1>
     </div>
     <div class="formWelcome">
-        <p>Welcome</p>
+        <p>Account</p>
 
         <form method="POST" id="main-form">
 
-        <input type="date" class="birthday" name="birthday" required>
+        <div>
+            <label>Username :</label>
+            <input type="text" class="username" name="username" >
+        </div>
 
-        <div class="radio">
-            <label class="homme">Homme</label>
-            <input type="radio" class="genre" value="Homme" name="genre" >
+        <div>
+            <label>Email :</label>
+            <input type="email" class="email" name="email" >
+        </div>
 
-            <label class="femme">Femme</label>
-            <input type="radio" class="genre" value="Femme" name="genre" >
+        <div>
+            <label>Biography :</label>
+            <input type="text" class="biography" name="biography" >
+        </div>
+
+        <div>
+            <label>City :</label>
+            <input type="text" class="location" name="location" >
         </div>
 
         <select name="sport" id="sport-select" required>  
@@ -54,24 +64,25 @@
                 },
             }).then(response => response.json()).then(data => {
                 for (let i = 0; i < data.length; i++) {
-                let sportName = data[i].Name;
-                let sport = document.createElement("option")
-                sport.innerHTML = sportName
-                sport.value = sportName
-                const checkbox = document.getElementById("sport-select") 
-                checkbox.appendChild(sport)
-                let sport2 = document.createElement("input")
-                let sport2Label = document.createElement("label")
-                sport2.type = "checkbox"
-                sport2.id = sportName
-                sport2.name = "sports"
-                sport2.value = sportName
-                sport2Label.innerHTML = sportName
-                const div = document.createElement("div")
-                const otherSport = document.getElementById("sport2") 
-                div.appendChild(sport2)
-                div.appendChild(sport2Label)
-                otherSport.appendChild(div)
+                    let sportName = data[i].Name;
+                    let sport = document.createElement("option")
+                    sport.innerHTML = sportName
+                    sport.value = sportName
+                    const checkbox = document.getElementById("sport-select") 
+                    checkbox.appendChild(sport)
+                    let sport2 = document.createElement("input")
+                    let sport2Label = document.createElement("label")
+                    sport2.type = "checkbox"
+                    sport2.id = sportName
+                    sport2.name = "sports"
+                    sport2.value = sportName
+                    sport2Label.innerHTML = sportName
+                    const div = document.createElement("div")
+                    div.classList.add("checkbox-container");
+                    const otherSport = document.getElementById("sport2") 
+                    div.appendChild(sport2)
+                    div.appendChild(sport2Label)
+                    otherSport.appendChild(div)
             }
         })
 
@@ -121,7 +132,7 @@
             const imgElement = document.getElementById('profile-image');
             formData.append('image', imgElement.src);
             const id = getCookie("user_id");
-            const url = `http://localhost:8081/welcomeForm?id=` + encodeURIComponent(id);
+            const url = `http://localhost:8081/accountForm?id=` + encodeURIComponent(id);
 
             try {
                 const response = await fetch(url, {
@@ -134,7 +145,8 @@
                     throw new Error(`Network response was not ok: ${errorText}`);
                 }
 
-                const result = await response.json();
+                let result = await response.json();
+                result = result.data
                 console.log('Form submitted successfully:', result);
 
             } catch (error) {
