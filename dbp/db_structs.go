@@ -1,8 +1,10 @@
 package dbp
 
 import (
+	"sync"
 	"time"
 
+	"github.com/gorilla/websocket"
 	"gorm.io/gorm"
 )
 
@@ -41,4 +43,12 @@ type Stat struct {
 	ID         uint `gorm:"primarykey"`
 	Name       string
 	Catégories string
+}
+
+type Room struct {
+	id         string
+	clients    map[*websocket.Conn]bool
+	register   chan *websocket.Conn
+	unregister chan *websocket.Conn
+	mu         sync.RWMutex
 }

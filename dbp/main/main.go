@@ -14,7 +14,16 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
 
 func main() {
 	router := gin.Default()
@@ -29,6 +38,8 @@ func main() {
 	router.POST("/welcomeForm", WelcomeForm)
 	router.POST("/accountForm", AccountForm)
 
+	router.GET("/ws", handleWebSocket)
+
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
 	config.AllowMethods = []string{"POST", "GET", "PUT", "OPTIONS"}
@@ -40,6 +51,29 @@ func main() {
 	router.Use(cors.New(config))
 
 	log.Fatal(router.Run(":8081"))
+}
+
+func handleWebSocket(c *gin.Context) {
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		log.Println("Error during connection upgrade:", err)
+		return
+	}
+	defer conn.Close()
+
+	for {
+		messageType, message, err := conn.ReadMessage()
+		if err != nil {
+			log.Println("Error during message reading:", err)
+			break
+		}
+		log.Printf("Received: %s", message)
+
+		if err = conn.WriteMessage(messageType, message); err != nil {
+			log.Println("Error during message writing:", err)
+			break
+		}
+	}
 }
 
 func getUserByID(c *gin.Context) {
