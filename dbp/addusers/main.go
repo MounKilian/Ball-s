@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"time"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -12,27 +13,15 @@ import (
 
 func main() {
 	last := &dbp.User{}
-	tx := dbp.DB.Last(last)
-	if tx.RowsAffected > 0 {
-		fmt.Println("last ID :", last.ID)
-	} else {
-		last.ID = 0
+	dbp.DB.Last(&last)
+
+	for i := last.ID; i < 5000; i++ {
+		time.Sleep(1 * time.Second)
+
+		dbp.RegisterUser("Test : "+fmt.Sprint(i), "test"+fmt.Sprint(i)+"@test.com", "test")
+		fmt.Println("ID :", i)
 	}
-	for i := 0; i < 5000; i++ {
-
-		user := dbp.User{
-			Username: "Test : " + fmt.Sprint(last.ID+1),
-			Password: "test",
-			Email:    "test" + fmt.Sprint(last.ID+1) + "@test.com",
-			Sport:    "Football",
-		}
-
-		dbp.DB.Create(&user)
-		userID := user.ID
-
-		fmt.Println("userID :", userID)
-		// CloneDb("test")
-	}
+	// CloneDb("test")
 }
 
 func Marshal(v any) string {
