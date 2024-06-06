@@ -18,7 +18,7 @@ import (
 
 func main() {
 	router := gin.Default()
-
+	sort()
 	router.LoadHTMLGlob("pages/*.html")
 
 	router.Static("/static", "./static")
@@ -30,6 +30,8 @@ func main() {
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "home.html", nil)
 	})
+
+	router.GET("/profilUser", profileUser)
 
 	router.GET("/register", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "register.html", nil)
@@ -91,9 +93,9 @@ func main() {
 		cookie := &http.Cookie{
 			Name:     "user_id",
 			Value:    userID,
-			SameSite: http.SameSiteStrictMode,
-			// 	HttpOnly: true,
-			MaxAge: 3600, // Durée de vie sdu cookie en secondes (1 heure ici)
+			Path:     "/",
+			HttpOnly: true,
+			MaxAge:   3600, // Durée de vie du cookie en secondes (1 heure ici)
 		}
 		http.SetCookie(c.Writer, cookie)
 
@@ -139,7 +141,8 @@ func addUsers() {
 
 	for i := 0; i < 50; i++ {
 		db := dbp.DB
-		sportid := rand.Intn(17)
+		sport := &dbp.Stat{ID: uint(rand.Intn(17))}
+		db.First(&sport, sport.ID)
 		cityrand := rand.Intn(2)
 		var cityname string
 		if cityrand == 0 {
@@ -150,24 +153,23 @@ func addUsers() {
 		user := dbp.User{
 			Username:    "User",
 			DateOfBirth: time.Now(),
-			SportID:     sportid,
+			Sport:       sport.Name,
 			City:        cityname,
 		}
-
 		db.Create(&user)
-
 	}
 }
 
 func sort() {
 	db := dbp.DB
 	users := []dbp.User{}
-	db.Find(&users, &dbp.User{})
+	swiped := []int64{}
+	db.Not(&swiped).Find(&users)
 	startUser := rand.Intn(50)
 	var potential []dbp.User
 	for i := 0; i < len(users); i++ {
 		if users[startUser].City == users[i].City && i != startUser {
-			if users[startUser].SportID == users[i].SportID {
+			if users[startUser].Sport == users[i].Sport {
 				potential = append(potential, users[i])
 			}
 		}
@@ -179,4 +181,25 @@ func sort() {
 	for i := 0; i < len(potential); i++ {
 		fmt.Println(potential[i].ID)
 	}
+}
+
+func profileUser(c *gin.Context) {
+	user := dbp.User{
+		Username:  "username",
+		Email:     "email@email.com",
+		Password:  "Password",
+		Image:     "uglyprofilpic.png",
+		Biography: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+		SportID:   1,
+		Sport: dbp.Stat{
+			ID:         2,
+			Name:       "pingpong",
+			Catégories: "triple champion du monde",
+		},
+		DateOfBirth: time.Now(),
+		City:        "69420",
+	}
+
+	c.HTML(http.StatusOK, "profilUser.html", user)
+
 }
