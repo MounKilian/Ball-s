@@ -8,6 +8,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -121,7 +123,7 @@ func WelcomeForm(c *gin.Context) {
 	db := dbp.DB
 
 	birthday := c.PostForm("birthday")
-	// genre := c.PostForm("genre")
+	genre := c.PostForm("genre")
 	sport := c.PostForm("sport")
 	profilePicture := c.PostForm("image")
 	userId := c.Query("id")
@@ -141,7 +143,7 @@ func WelcomeForm(c *gin.Context) {
 		}
 	}
 
-	_ = db.Exec("UPDATE users SET secondary_sport = ? date_of_birth = ?, sport_id = ?, image = ? WHERE id = ?", sportsList, birthday, sport, profilePicture, userId)
+	_ = db.Exec("UPDATE users SET gender = ?, secondary_sport = ? date_of_birth = ?, sport = ?, image = ? WHERE id = ?", genre, sportsList, birthday, sport, profilePicture, userId)
 
 	c.JSON(http.StatusOK, gin.H{"message": "User information updated successfully"})
 	log.Printf("User information updated successfully: %s", userId)
@@ -149,13 +151,12 @@ func WelcomeForm(c *gin.Context) {
 
 func AccountForm(c *gin.Context) {
 	db := dbp.DB
-	userId := c.Query("id")
+	userId, _ := strconv.Atoi(c.Query("id"))
 
 	user := &dbp.User{}
 	tx := db.First(user, userId)
 	if tx.RowsAffected > 0 {
-		result, _ := json.Marshal(user)
-		fmt.Fprintln(c.Writer, string(result))
+		c.JSON(http.StatusOK, gin.H{"data": user})
 	} else {
 		fmt.Fprintln(c.Writer, "User not found")
 	}
@@ -192,16 +193,12 @@ func AccountForm(c *gin.Context) {
 		selectedSports = []string{}
 	}
 
-	sportsList := ""
-	if len(selectedSports) > 0 {
-		sportsList = fmt.Sprintf("%s", selectedSports[0])
-		for i := 1; i < len(selectedSports); i++ {
-			sportsList += fmt.Sprintf(",%s", selectedSports[i])
-		}
-	}
+	sportsList := strings.Join(selectedSports, ",")
+	log.Println(sportsList)
 
-	_ = db.Exec("UPDATE users SET secondary_sport = ?, username = ?, email = ?, biography = ?, sport_id = ?, image = ?, city = ? WHERE id = ?", sportsList, username, email, biography, sport, profilePicture, city, userId)
-
-	c.JSON(http.StatusOK, gin.H{"message": "User information updated successfully"})
+	// result := db.Exec("UPDATE users SET secondary_sport = ?, username = ?, email = ?, biography = ?, sport_id = ?, image = ?, city = ? WHERE id = ?", sportsList, username, email, biography, sport, profilePicture, city, userId)
+	result := db.Model(&user).Updates(dbp.User{SecondarySport: sportsList, Username: username, Email: email, Biography: biography, Sport: sport, Image: profilePicture, City: city})
+	log.Println(result.RowsAffected)
 	log.Printf("User information updated successfully: %s", userId)
+	// c.JSON(http.StatusOK, gin.H{"data": "User information updated successfully"})
 }

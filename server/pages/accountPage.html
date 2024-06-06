@@ -64,24 +64,25 @@
                 },
             }).then(response => response.json()).then(data => {
                 for (let i = 0; i < data.length; i++) {
-                let sportName = data[i].Name;
-                let sport = document.createElement("option")
-                sport.innerHTML = sportName
-                sport.value = sportName
-                const checkbox = document.getElementById("sport-select") 
-                checkbox.appendChild(sport)
-                let sport2 = document.createElement("input")
-                let sport2Label = document.createElement("label")
-                sport2.type = "checkbox"
-                sport2.id = sportName
-                sport2.name = sportName
-                sport2Label.innerHTML = sportName
-                const div = document.createElement("div")
-                div.classList.add("checkbox-container");
-                const otherSport = document.getElementById("sport2") 
-                div.appendChild(sport2)
-                div.appendChild(sport2Label)
-                otherSport.appendChild(div)
+                    let sportName = data[i].Name;
+                    let sport = document.createElement("option")
+                    sport.innerHTML = sportName
+                    sport.value = sportName
+                    const checkbox = document.getElementById("sport-select") 
+                    checkbox.appendChild(sport)
+                    let sport2 = document.createElement("input")
+                    let sport2Label = document.createElement("label")
+                    sport2.type = "checkbox"
+                    sport2.id = sportName
+                    sport2.name = "sports"
+                    sport2.value = sportName
+                    sport2Label.innerHTML = sportName
+                    const div = document.createElement("div")
+                    div.classList.add("checkbox-container");
+                    const otherSport = document.getElementById("sport2") 
+                    div.appendChild(sport2)
+                    div.appendChild(sport2Label)
+                    otherSport.appendChild(div)
             }
         })
 
@@ -126,7 +127,6 @@
         const submitButton = document.querySelector('.submitFin');
 
         submitButton.addEventListener('click', async function(event) {
-            console.log("coucou")
             event.preventDefault();
             const formData = new FormData(mainForm);
             const imgElement = document.getElementById('profile-image');
@@ -145,7 +145,8 @@
                     throw new Error(`Network response was not ok: ${errorText}`);
                 }
 
-                const result = await response.json();
+                let result = await response.json();
+                result = result.data
                 console.log('Form submitted successfully:', result);
 
             } catch (error) {
