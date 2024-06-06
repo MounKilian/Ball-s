@@ -164,22 +164,31 @@ func sort() {
 	db := dbp.DB
 	users := []dbp.User{}
 	swiped := []int64{}
+	
+	
 	db.Not(&swiped).Find(&users)
-	startUser := rand.Intn(50)
-	var potential []dbp.User
-	for i := 0; i < len(users); i++ {
-		if users[startUser].City == users[i].City && i != startUser {
-			if users[startUser].Sport == users[i].Sport {
-				potential = append(potential, users[i])
-			}
-		}
+	
+	if len(users) == 0 {
+			fmt.Println("No users found")
+			return
 	}
-	// result, _ := json.Marshal(&users)
-	// resultpot, _ := json.Marshal((&potential))
+
+	rand.Seed(time.Now().UnixNano()) 
+	startUser := rand.Intn(len(users))
+	var potential []dbp.User
+	
+	for i := 0; i < len(users); i++ {
+			if users[startUser].City == users[i].City && i != startUser {
+					if users[startUser].Sport == users[i].Sport {
+							potential = append(potential, users[i])
+					}
+			}
+	}
+
 	fmt.Println(users[startUser].ID)
 	fmt.Println("potential")
 	for i := 0; i < len(potential); i++ {
-		fmt.Println(potential[i].ID)
+			fmt.Println(potential[i].ID)
 	}
 }
 
