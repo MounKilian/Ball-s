@@ -46,12 +46,12 @@ func AuthenticateUser(username, password string) (string, bool, error) {
 	var user User
 	err := DB.Where("username = ?", username).First(&user).Error
 	if err != nil {
-		return "", false, errors.New("Nom d'utilisateur incorrect")
+		return "", false, errors.New("error: Nom d'utilisateur incorrect")
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
-		return "", false, errors.New("Mot de passe incorrect")
+		return "", false, errors.New("error: Mot de passe incorrect")
 	}
 
 	return strconv.Itoa(int(user.ID)), true, nil
