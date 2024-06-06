@@ -33,6 +33,8 @@
         let nextcard = document.querySelector("#bgcard")
         let card = document.querySelector("a.card")
         let ball = document.querySelector("#ball")
+        let profile = document.querySelector("#profile")
+        let sports = []
 
         window.getCookie = function (name) {
             var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
@@ -41,6 +43,20 @@
 
         let potentials = []
         let potentials_position = 0
+        fetch("http://localhost:8081/sports")
+            .then(response => response.json())
+            .then(data => {
+                sports = new Map(data.map(c => [c.Name, c.Image]))
+                console.log(sports)
+            })
+
+        fetch("http://localhost:8081/user?id=" + encodeURIComponent(getCookie("user_id")))
+            .then(response => response.json())
+            .then(data => {
+                // console.log(data)
+                profile.href = "/profilUser?id=" + data.ID
+                profile.style.backgroundImage = `url(${data.Image ? data.Image : "/static/images/avatar.png"})`
+            })
 
         // Récupérer les potentiels matchs
         fetch("http://localhost:8081/sort?id=" + encodeURIComponent(getCookie("user_id")))
@@ -53,11 +69,13 @@
 
         function next() {
             ismoving = false
-            let first = potentials[potentials_position].Image ? potentials[potentials_position].Image : "/static/images/avatar.png"
+            let currentuser = potentials[potentials_position]
+            let first = currentuser.Image ? currentuser.Image : "/static/images/avatar.png"
             let second = potentials.length >= (potentials_position + 2) && potentials[potentials_position + 1].Image ? potentials[potentials_position + 1].Image : "/static/images/avatar.png"
             bg.src = first
             card.style.backgroundImage = `url(${first})`
             nextcard.style.backgroundImage = `url(${second})`
+            sports.has(currentuser.Sport) ? ball.style.backgroundImage = `url(${sports.get(currentuser.Sport)})` : ball.textContent = currentuser.Sport
             potentials_position = (potentials_position + 1) % potentials.length
         }
 

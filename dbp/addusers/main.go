@@ -24,7 +24,37 @@ func main() {
 	// }
 
 	// CloneDb("test")
-	AddUsers()
+	// AddUsers()
+	images := []string{
+		"/static/img/_08095b50-f04c-4ff5-9750-26debab1ba96.jpg",
+		"/static/img/_a63562ee-b105-4eb8-bb4f-1b877f274e36.jpg",
+		"/static/img/_afa838f5-cb23-492e-abdf-ee8778076d94.jpg",
+		"/static/img/angle-droit (1).png",
+		"/static/img/angle-droit.png",
+		"/static/img/_b4a4f3a2-ab2b-4a31-9b62-9a601e8375e5.jpg",
+		"/static/img/_e1bfede1-8d6f-4344-9469-0e0238991e26.jpg",
+		"/static/img/image.png",
+		// "/static/img/IMG_8302.jpg",
+		"/static/img/IMG_9082.jpg",
+		"/static/img/IMG_9083.jpg",
+		"/static/img/lapin.jpg",
+		"/static/img/IMG_1362.jpg",
+	}
+	_ = images
+	db := dbp.DB
+	users := []dbp.User{}
+	db.Not(5, 6).Find(&users) //, map[string]any{"image": ""})
+	fmt.Println("len :", len(users))
+	for _, u := range users {
+		if u.ID == 6 {
+			fmt.Println("error: killian found")
+			fmt.Println(u)
+		}
+		// fmt.Println(u.ID)
+		image := images[rand.Intn(12)]
+		u.Image = image
+		db.Save(&u)
+	}
 }
 
 func Marshal(v any) string {

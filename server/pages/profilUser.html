@@ -20,19 +20,64 @@
         <img class="ball" src="../static/image/ball.svg" alt="sportPicture">
 
         <div class="rightcore">
-            <p class="Username">{{.Username}}</p>
+            <p class="Username"></p>
             <p class="biography">{{.Biography}}</p>
         </div>
     </div>
     <div class="down">
         <div class="writing">
-            <p>location : {{.City}} </p>
-            <p>other sport : no other sport</p>
+            <p class="location"> </p>
+            <p class="otherSport">other sport : no other sport</p>
             <a href="/modifie" class="modifie"><button class="button">modify</button></a>
         </div>
         <!-- <a href="/modifie" class="modifie"><button class="button">modify</button></a> -->
     </div>
+    <script>
 
+        window.getCookie = function (name) {
+            var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+            if (match) return match[2];
+        }
+
+        let pp = document.querySelector(".profilePicture")
+        let username = document.querySelector(".Username")
+        let biography = document.querySelector(".biography")
+        let loca = document.querySelector(".location")
+        let otherSport = document.querySelector(".otherSport")
+
+        fetch("http://localhost:8081/user?id=" + encodeURIComponent(getCookie("user_id")))
+            .then(response => response.json())
+            .then(data => {
+
+                username.textContent = data.Username
+
+                if (data.SecondarySport == "") {
+                    otherSport.textContent = "other sport not set"
+                } else {
+                    otherSport.textContent = "other sport : " + data.SecondarySport
+                }
+
+                if (data.City == "") {
+                    loca.textContent = "location not set"
+                } else {
+                    loca.textContent = "location : " + data.City
+                }
+
+                if (data.Biography == "") {
+                    biography.textContent = "biography not set"
+                } else {
+                    biography.textContent = data.Biography
+                }
+
+                if (data.Image != "") {
+                    pp.src = data.Image
+                } else {
+                    pp.src = "../static/image/uglyprofilpic.png"
+                }
+
+            })
+
+    </script>
 </body>
 
 </html>
