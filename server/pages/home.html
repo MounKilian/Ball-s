@@ -50,24 +50,28 @@
             card.style.backgroundImage = `url(${nextI})`
         }
 
-        strike.addEventListener("click", () => {
+        const move_right = () => {
             ball.style.display = "none";
             card.style.backgroundColor = "green";
             card.animate(
                 { backgroundPosition: '-100vw', transform: "translate3d(80%, 0, 0)" },
                 animationOptions
             ).addEventListener("finish", animEnd)
-        })
+        }
 
-        miss.addEventListener("click", () => {
+        const move_left = () => {
             ball.style.display = "none";
             card.style.backgroundColor = "red";
             card.animate(
                 { backgroundPosition: '100vw', transform: "translate3d(-80%, 0, 0)" },
                 animationOptions
             ).addEventListener("finish", animEnd)
-        })
+        }
+
+        strike.addEventListener("click", move_right)
+        miss.addEventListener("click", move_left)
     </script>
+    <script src="/static/js/handle-touch.js"></script>
 </body>
 
 </html>

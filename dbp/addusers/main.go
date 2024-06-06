@@ -2,34 +2,21 @@ package main
 
 import (
 	"balls/dbp"
-	"encoding/json"
 	"fmt"
-	"log"
-
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
 
 func main() {
-	last := &dbp.User{}
-	tx := dbp.DB.Last(last)
-	if tx.RowsAffected > 0 {
-		fmt.Println("last ID :", last.ID)
-	} else {
-		last.ID = 0
-	}
+	// last := &dbp.User{}
+	// dbp.DB.Last(&last)
+	// // i := last.ID
+	// for i := last.ID + 1; i <= 5000; i++ {
+	// 	// time.Sleep(1 * time.Second)
 
-	user := dbp.User{
-		Username: "Test : " + fmt.Sprint(last.ID+1),
-		Password: "test1",
-		Email:    "test" + fmt.Sprint(last.ID+1) + "@test.com",
-	}
+	// 	dbp.RegisterUser("Test : "+fmt.Sprint(i), "test"+fmt.Sprint(i)+"@test.com", "test")
+	// 	fmt.Println("ID :", i)
+	// }
 
-	dbp.DB.Create(&user)
-	userID := user.ID
-
-	fmt.Println("userID :", userID)
-	// CloneDb()
+	// CloneDb("test")
 }
 
 func Marshal(v any) string {
@@ -41,14 +28,14 @@ func Marshal(v any) string {
 	return string(re)
 }
 
-func CloneDb() {
+func CloneDb(dbName string) {
 	db1 := dbp.DB
 	users := []dbp.User{}
 	db1.Find(&users)
 	stats := []dbp.Stat{}
 	db1.Find(&stats)
 	fmt.Println(Marshal(users[0]), Marshal(stats[0]))
-	db2, err := gorm.Open(sqlite.Open("balls2.db"), &gorm.Config{})
+	db2, err := gorm.Open(sqlite.Open(dbName+".db"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}

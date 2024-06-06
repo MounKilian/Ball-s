@@ -21,14 +21,6 @@ func init() {
 }
 
 func RegisterUser(username, email, password string) error {
-	var existingUser User
-	err := DB.Where("username = ? OR email = ?", username, email).First(&existingUser).Error
-	if err == nil {
-		return errors.New("un utilisateur avec le même nom d'utilisateur ou la même adresse e-mail existe déjà")
-	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
-		return errors.New("erreur lors de la recherche de l'utilisateur dans la base de données")
-	}
-
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return errors.New("erreur lors du hachage du mot de passe")
@@ -40,7 +32,10 @@ func RegisterUser(username, email, password string) error {
 		Password: string(hashedPassword),
 	}
 	err = DB.Create(&user).Error
-	if err != nil {
+	if errors.Is(err, gorm.ErrDuplicatedKey) {
+		log.Println("Erreur de contrainte de vérification")
+		return errors.New("un utilisateur avec le même nom d'utilisateur ou la même adresse e-mail existe déjà")
+	} else if err != nil {
 		return errors.New("erreur lors de l'enregistrement de l'utilisateur dans la base de données")
 	}
 
@@ -51,12 +46,12 @@ func AuthenticateUser(username, password string) (string, bool, error) {
 	var user User
 	err := DB.Where("username = ?", username).First(&user).Error
 	if err != nil {
-		return "", false, errors.New("Nom d'utilisateur incorrect")
+		return "", false, errors.New("error: Nom d'utilisateur incorrect")
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
-		return "", false, errors.New("Mot de passe incorrect")
+		return "", false, errors.New("error: Mot de passe incorrect")
 	}
 
 	return strconv.Itoa(int(user.ID)), true, nil
