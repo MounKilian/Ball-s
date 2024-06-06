@@ -13,22 +13,53 @@
     </div>
     <div class="core">
 
-        <img class="profilePicture" src="../static/image/{{.Image}}" alt="your profile picture">
+        <img class="profilePicture" src="" alt="your profile picture">
         <img class="ball" src="../static/image/ball.svg" alt="sportPicture">
            
         <div class="rightcore">
-            <p class="Username">{{.Username}}</p>     
-            <p class="biography">{{.Biography}}</p>            
+            <p class="Username"></p>     
+            <p class="biography"></p>            
         </div>
     </div>
     <div class="down">
         <div class="writing">
-            <p>location : {{.City}} </p>
-            <p>other sport : no other sport</p>
-            <a href="/modifie" class="modifie"><button class="button">modify</button></a>
+            <p class="Location"></p>
+            <p class="OtherSports">Other sport : no other sport</p>
+            <a href="/account" class="modifie"><button class="button">Modify</button></a>
         </div>
         <!-- <a href="/modifie" class="modifie"><button class="button">modify</button></a> -->
     </div>
-    
+    <script>
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+        let id = getCookie("user_id")
+
+        fetch('http://localhost:8081/user?id=' + encodeURIComponent(id), {
+            mode: 'cors',
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }).then(response => response.json()).then(data => {
+            console.log(data.Username)
+            let username = document.querySelector(".Username")
+            username.textContent = data.Username
+            let biography = document.querySelector(".biography")
+            biography.textContent = data.Biography
+            let profilePicture = document.querySelector(".profilePicture")
+            profilePicture.src = data.Image
+            let Location = document.querySelector(".Location")
+            if (data.City != undefined) {
+                Location.textContent = "Location: " + data.City 
+            } else {
+                Location.textContent = "Location: "
+            }
+            let OtherSports = document.querySelector(".OtherSports")
+            // OtherSports.textContent = data.
+        })
+    </script>
 </body>
 </html>
