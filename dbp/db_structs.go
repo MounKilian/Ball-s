@@ -13,6 +13,9 @@ type User struct {
 	Password    string
 	Image       string
 	Biography   string
+	Gender      string
+	Genderpref  string
+	swiped      []string
 	SportID     int
 	Sport       Stat
 	DateOfBirth time.Time

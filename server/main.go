@@ -129,20 +129,38 @@ func addUsers() {
 		last.ID = 0
 	}
 
-	for i := 0; i < 50; i++ {
+	for i := 0; i < 300; i++ {
 		db := dbp.DB
 		sportid := rand.Intn(17)
 		cityrand := rand.Intn(2)
+		genderand := rand.Intn(2)
+		genderprefrand := rand.Intn(2)
 		var cityname string
+		var gender string
+		var genderpref string
 		if cityrand == 0 {
 			cityname = "paris"
 		} else {
 			cityname = "Lyon"
 		}
+
+		if genderand == 0 {
+			gender = "men"
+		} else {
+			gender = "women"
+		}
+
+		if genderprefrand == 0 {
+			genderpref = "men"
+		} else {
+			genderpref = "women"
+		}
 		user := dbp.User{
 			Username:    "User",
 			DateOfBirth: time.Now(),
 			SportID:     sportid,
+			Gender:      gender,
+			Genderpref:  genderpref,
 			City:        cityname,
 		}
 
