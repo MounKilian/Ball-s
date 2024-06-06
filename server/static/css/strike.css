@@ -8,6 +8,32 @@ html {
     margin: 0;
 }
 
+.card {
+    position: relative;
+}
+
+#card-content {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+}
+
+#name {
+    font-size: 24px;
+    font-weight: bold; 
+    color: #ffffff; 
+    padding: 10px 10px; 
+    background-color: rgba(0, 0, 0, 0.5); 
+    border-radius: 8px; 
+    margin-right: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    text-align: center;
+    margin-left: 10px;
+}
+
+
 body {
     overflow: hidden;
     display: flex;
