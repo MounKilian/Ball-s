@@ -17,11 +17,13 @@ import (
 // }
 
 func main() {
-	db := dbp.DB
-	users := []dbp.User{}
-	db.Find(&users, &dbp.User{})
-	usertosortfrom := rand.Intn(len(users))
-	sort(users[usertosortfrom])
+	// addUsers()
+	// addSwipe()
+	// db := dbp.DB
+	// users := []dbp.User{}
+	// db.Find(&users, &dbp.User{})
+	// usertosortfrom := rand.Intn(len(users))
+	// sort(users[usertosortfrom])
 	router := gin.Default()
 
 	router.LoadHTMLGlob("pages/*.html")
@@ -131,6 +133,7 @@ func addSport() {
 
 		db.Create(&dbp.Stat{Name: v})
 	}
+
 	// db.Create(&stat)
 }
 
@@ -146,8 +149,7 @@ func addUsers() {
 
 	for i := 0; i < 300; i++ {
 		db := dbp.DB
-		sport := &dbp.Stat{ID: uint(rand.Intn(17))}
-		db.First(&sport, sport.ID)
+		sportid := rand.Intn(17)
 		cityrand := rand.Intn(2)
 		genderand := rand.Intn(2)
 		genderprefrand := rand.Intn(2)
@@ -179,7 +181,9 @@ func addUsers() {
 			DesiredGender: genderpref,
 			City:          cityname,
 		}
+
 		db.Create(&user)
+
 	}
 }
 
@@ -189,60 +193,49 @@ func addSwipe() {
 	users := []dbp.User{}
 	swipes := []int{}
 
-	for i := 0; i < len(users); i++ {
+	db.Find(&swipes, &dbp.Swipe{})
+	db.Find(&users)
 
-	}
+	for f := 0; f < len(users); f++ {
 
-	startUser := users[0]
-
-	db.Select("user_b_id").Find(&swipes, &dbp.Swipe{UserAID: int(startUser.ID)})
-	db.Not(swipes).Find(&users)
-
-	var potential []dbp.User
-	for i := 0; i < len(users); i++ {
-		if startUser.City == users[i].City && users[i].ID != startUser.ID {
-			if startUser.Sport == users[i].Sport && startUser.DesiredGender == users[i].Gender {
-				potential = append(potential, users[i])
+		var potential []dbp.User
+		potential = nil
+		for i := 0; i < len(users); i++ {
+			if users[f].City == users[i].City && users[i].ID != users[f].ID {
+				if users[f].Sport == users[i].Sport && users[f].DesiredGender == users[i].Gender {
+					potential = append(potential, users[i])
+				}
 			}
 		}
+
+		rand.Seed(time.Now().UnixNano())
+		rand.Shuffle(len(potential), func(i, j int) { potential[i], potential[j] = potential[j], potential[i] })
+		// result, _ := json.Marshal(&users)
+		// resultpot, _ := json.Marshal((&potential))
+
+		swipe := dbp.Swipe{
+			UserAID: int(users[f].ID),
+			UserA:   users[f],
+			UserBID: int(potential[0].ID),
+			UserB:   potential[0],
+		}
+		db.Create(&swipe)
+
 	}
-
-	rand.Seed(time.Now().UnixNano())
-	rand.Shuffle(len(potential), func(i, j int) { potential[i], potential[j] = potential[j], potential[i] })
-	// result, _ := json.Marshal(&users)
-	// resultpot, _ := json.Marshal((&potential))
-	fmt.Println(startUser.ID)
-	fmt.Println("potential")
-	for i := 0; i < len(potential); i++ {
-		fmt.Println(potential[i].ID)
-	}
-}
-
-func profileUser(c *gin.Context) {
-	user := dbp.User{
-		Username:    "username",
-		Email:       "email@email.com",
-		Password:    "Password",
-		Image:       "uglyprofilpic.png",
-		Biography:   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
-		Sport:       "Football",
-		DateOfBirth: time.Now(),
-		City:        "69420",
-	}
-
-	c.HTML(http.StatusOK, "profilUser.html", user)
-
 }
 
 func sort(startUser dbp.User) []dbp.User {
 	db := dbp.DB
 	users := []dbp.User{}
 	swipes := []int{}
+	db.Model(&dbp.Swipe{}).Where(&dbp.Swipe{UserAID: int(startUser.ID)}).Pluck("user_b_id", &swipes)
 
-	db.Select("user_b_id").Find(&swipes, &dbp.Swipe{UserAID: int(startUser.ID)})
 	db.Not(swipes).Find(&users)
 
+	fmt.Println(swipes)
+
 	var potential []dbp.User
+
 	for i := 0; i < len(users); i++ {
 		if startUser.City == users[i].City && users[i].ID != startUser.ID {
 			if startUser.Sport == users[i].Sport && startUser.DesiredGender == users[i].Gender {
@@ -261,4 +254,20 @@ func sort(startUser dbp.User) []dbp.User {
 		fmt.Println(potential[i].ID)
 	}
 	return potential
+}
+
+func profileUser(c *gin.Context) {
+	user := dbp.User{
+		Username:    "username",
+		Email:       "email@email.com",
+		Password:    "Password",
+		Image:       "uglyprofilpic.png",
+		Biography:   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+		Sport:       "Football",
+		DateOfBirth: time.Now(),
+		City:        "69420",
+	}
+
+	c.HTML(http.StatusOK, "profilUser.html", user)
+
 }

@@ -13,13 +13,13 @@ body {
 	justify-content: space-between;
 	align-items: center;
 	padding: 10px 20px;
-	background-color: #4CAF50;
-	color: white;
+	background-color:white;
+	color: black;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .contacts-link {
-	color: white;
+	color: black;
 	text-decoration: none;
 	font-size: 18px;
 }
@@ -78,7 +78,7 @@ body {
 	display: flex;
 	justify-content: space-between;
 	padding: 20px;
-	background-color: #FFFFFF;
+	background-color: white;
 	border-top: 1px solid #CCCCCC;
 	position: fixed;
 	bottom: 0;
@@ -106,5 +106,9 @@ button {
 }
 
 button:hover {
-	background-color: #45a049; 
+	background-color: white; 
+}
+
+header {
+	border-bottom: black 1px;
 }
