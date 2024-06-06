@@ -29,7 +29,7 @@
 
         ws.onmessage = function(event) {
             console.log("Received message:", event.data);
-            displayMessage(event.data)      
+            displayMessageforOther(event.data);      
         };
 
         function sendMessage(message) {
@@ -48,22 +48,35 @@
                 return;
             }
             messageInput.value = '';
-            displayMessage(messageText)
+            displayMessage(messageText);      
             sendMessage(messageText);
         });
 
-        function displayMessage(message) {
+        function displayMessageforOther(message) {
             var messageElement = document.createElement('div');
-            messageElement.classList.add('message');
+            messageElement.className = 'chat-message';
 
-            var messageText = document.createTextNode(message);
-            messageElement.appendChild(messageText);
+            var bubbleElement = document.createElement('div');
+            bubbleElement.className = 'chat-bubble';
+            bubbleElement.textContent = message;
+            messageElement.appendChild(bubbleElement);
 
-            var chatContainer = document.querySelector('.chat-container');
-            chatContainer.appendChild(messageElement);
+            document.querySelector('.chat-container').appendChild(messageElement);
+            document.querySelector('.chat-container').scrollTop = document.querySelector('.chat-container').scrollHeight; 
         }
 
-       
+        function displayMessage(message) {
+            var messageElement = document.createElement('divOther');
+            messageElement.className = 'chat-messageOther';
+
+            var bubbleElement = document.createElement('divOther');
+            bubbleElement.className = 'chat-bubbleOther';
+            bubbleElement.textContent = message;
+            messageElement.appendChild(bubbleElement);
+
+            document.querySelector('.chat-container').appendChild(messageElement);
+            document.querySelector('.chat-container').scrollTop = document.querySelector('.chat-container').scrollHeight; 
+        }
     </script>
 </body>
 </html>

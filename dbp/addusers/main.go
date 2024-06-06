@@ -63,21 +63,43 @@ func CloneDb() {
 
 func addMatches() {
 	db := dbp.DB
-
 	rand.Seed(time.Now().UnixNano())
 
-	for i := 0; i < 10; i++ {
-		match := dbp.Match{
-			UserAID: rand.Intn(5) + 1,
-			UserBID: rand.Intn(5) + 1,
-		}
-		for match.UserAID == match.UserBID {
-			match.UserBID = rand.Intn(5) + 1
+	existingMatches := make(map[[2]int]bool)
+
+	for i := 0; i < 5; {
+		userA := rand.Intn(5) + 1
+		userB := rand.Intn(5) + 1
+		if userA == userB {
+			continue
 		}
 
-		if err := db.Create(&match).Error; err != nil {
-			log.Printf("Error inserting match: %v", err)
+		if existingMatches[[2]int{userA, userB}] || existingMatches[[2]int{userB, userA}] {
+			continue
+		}
+
+		match1 := dbp.Match{
+			UserAID: userA,
+			UserBID: userB,
+		}
+
+		match2 := dbp.Match{
+			UserAID: userB,
+			UserBID: userA,
+		}
+
+		if err := db.Create(&match1).Error; err != nil {
+			log.Printf("Erreur lors de l'insertion de la correspondance : %v", err)
 			return
 		}
+
+		if err := db.Create(&match2).Error; err != nil {
+			log.Printf("Erreur lors de l'insertion de la correspondance inverse : %v", err)
+			return
+		}
+
+		existingMatches[[2]int{userA, userB}] = true
+		existingMatches[[2]int{userB, userA}] = true
+		i++
 	}
 }

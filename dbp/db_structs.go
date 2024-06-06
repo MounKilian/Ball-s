@@ -39,10 +39,12 @@ type Miss struct {
 
 type Match struct {
 	gorm.Model
-	UserAID int
-	UserA   User
-	UserBID int
-	UserB   User
+	UserAID    int
+	UserA      User
+	UserBID    int
+	UserB      User
+	RoomName   string
+	Historical string
 }
 
 type Stat struct {
