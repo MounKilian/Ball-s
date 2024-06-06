@@ -18,7 +18,7 @@ import (
 
 func main() {
 	router := gin.Default()
-	sort()
+	// sort()
 	router.LoadHTMLGlob("pages/*.html")
 
 	router.Static("/static", "./static")
@@ -31,7 +31,9 @@ func main() {
 		c.HTML(http.StatusOK, "home.html", nil)
 	})
 
-	router.GET("/profilUser", profileUser)
+	router.GET("/profilUser", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "profilUser.html", nil)
+	})
 
 	router.GET("/register", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "register.html", nil)
@@ -95,7 +97,7 @@ func main() {
 			Value:    userID,
 			Path:     "/",
 			HttpOnly: true,
-			MaxAge:   3600, // Durée de vie du cookie en secondes (1 heure ici)
+			MaxAge:   3600,
 		}
 		http.SetCookie(c.Writer, cookie)
 
@@ -104,6 +106,10 @@ func main() {
 
 	router.GET("/form", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "welcomePage.html", nil)
+	})
+
+	router.GET("/account", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "accountPage.html", nil)
 	})
 
 	if err := router.Run(":8080"); err != nil {
@@ -130,7 +136,6 @@ func addSport() {
 }
 
 func addUsers() {
-
 	last := &dbp.User{}
 	tx := dbp.DB.Last(last)
 	if tx.RowsAffected > 0 {
@@ -190,20 +195,4 @@ func sort() {
 	for i := 0; i < len(potential); i++ {
 			fmt.Println(potential[i].ID)
 	}
-}
-
-func profileUser(c *gin.Context) {
-	user := dbp.User{
-		Username:    "username",
-		Email:       "email@email.com",
-		Password:    "Password",
-		Image:       "uglyprofilpic.png",
-		Biography:   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
-		Sport:       "Football",
-		DateOfBirth: time.Now(),
-		City:        "69420",
-	}
-
-	c.HTML(http.StatusOK, "profilUser.html", user)
-
 }
