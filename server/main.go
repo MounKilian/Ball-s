@@ -18,7 +18,7 @@ import (
 
 func main() {
 	router := gin.Default()
-
+	sort()
 	router.LoadHTMLGlob("pages/*.html")
 
 	router.Static("/static", "./static")
@@ -83,9 +83,9 @@ func main() {
 		cookie := &http.Cookie{
 			Name:     "user_id",
 			Value:    userID,
-			SameSite: http.SameSiteStrictMode,
-			// 	HttpOnly: true,
-			MaxAge: 3600, // Durée de vie sdu cookie en secondes (1 heure ici)
+			Path:     "/",
+			HttpOnly: true,
+			MaxAge:   3600, // Durée de vie du cookie en secondes (1 heure ici)
 		}
 		http.SetCookie(c.Writer, cookie)
 
@@ -131,7 +131,8 @@ func addUsers() {
 
 	for i := 0; i < 50; i++ {
 		db := dbp.DB
-		sportid := rand.Intn(17)
+		sport := &dbp.Stat{ID: uint(rand.Intn(17))}
+		db.First(&sport, sport.ID)
 		cityrand := rand.Intn(2)
 		var cityname string
 		if cityrand == 0 {
@@ -142,24 +143,23 @@ func addUsers() {
 		user := dbp.User{
 			Username:    "User",
 			DateOfBirth: time.Now(),
-			SportID:     sportid,
+			Sport:       sport.Name,
 			City:        cityname,
 		}
-
 		db.Create(&user)
-
 	}
 }
 
 func sort() {
 	db := dbp.DB
 	users := []dbp.User{}
-	db.Find(&users, &dbp.User{})
+	swiped := []int64{}
+	db.Not(&swiped).Find(&users)
 	startUser := rand.Intn(50)
 	var potential []dbp.User
 	for i := 0; i < len(users); i++ {
 		if users[startUser].City == users[i].City && i != startUser {
-			if users[startUser].SportID == users[i].SportID {
+			if users[startUser].Sport == users[i].Sport {
 				potential = append(potential, users[i])
 			}
 		}
