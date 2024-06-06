@@ -84,17 +84,18 @@
 .rightcore{
     position:relative;
     flex-grow: 1;
-    flex-shrink: 1;
-    flex-basis: auto    ;
     top: 1%;
-    max-width: 49%;
-    height: auto;
+    max-width: 40%;
+    /* height: 50%; */
     display: flex;
     left: 15%;
-    right: 0;
+    right: 5%;
     box-sizing: border-box;
     flex-direction: column;
     white-space:pre-wrap;
+    max-height: 100%;
+    flex-shrink: 1;
+    
     /* background-color: blue; */
 }
 
@@ -244,6 +245,7 @@
         max-height: 100%;
         margin-top: 0;
         margin-left: 0;
+        margin-right: 0;
         letter-spacing: 0.1em;
         font-size: 3vw;
         /* background-color: yellow; */
