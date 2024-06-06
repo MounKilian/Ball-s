@@ -13,8 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"math/rand"
-
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -319,7 +317,7 @@ func sort(startUser dbp.User) []dbp.User {
 	db := dbp.DB
 	users := []dbp.User{}
 	swipes := []int{}
-	db.Model(&dbp.Swipe{}).Where(&dbp.Swipe{UserAID: int(startUser.ID)}).Pluck("user_b_id", &swipes)
+	db.Model(&dbp.Miss{}).Where(&dbp.Miss{UserAID: int(startUser.ID)}).Pluck("user_b_id", &swipes)
 
 	db.Select("id", "username", "biography", "gender", "sport", "secondary_sport", "image", "city", "date_of_birth").Not(swipes).Find(&users)
 

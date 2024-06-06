@@ -174,7 +174,7 @@ func AddSwipe() {
 		// result, _ := json.Marshal(&users)
 		// resultpot, _ := json.Marshal((&potential))
 
-		swipe := dbp.Swipe{
+		swipe := dbp.Miss{
 			UserAID: int(users[f].ID),
 			UserA:   users[f],
 			UserBID: int(potential[0].ID),
