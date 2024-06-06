@@ -23,10 +23,10 @@ func main() {
 	// 	fmt.Println("ID :", i)
 	// }
 
-	CloneDb("balls", "test")
+	// CloneDb("balls", "test")
 	// AddUsers()
 	// AddImages()
-	// addMatches()
+	addMatches()
 }
 
 func Marshal(v any) string {
@@ -198,9 +198,9 @@ func addMatches() {
 
 	existingMatches := make(map[[2]int]bool)
 
-	for i := 0; i < 5; {
-		userA := rand.Intn(5) + 1
-		userB := rand.Intn(5) + 1
+	for i := 0; i < 2000; {
+		userA := rand.Intn(1511) + 1
+		userB := rand.Intn(1511) + 1
 		if userA == userB {
 			continue
 		}
