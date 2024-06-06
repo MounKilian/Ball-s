@@ -30,6 +30,8 @@
             <p class="Location"></p>
             <p class="OtherSports">Other sport : no other sport</p>
             <a href="/account" class="modifie"><button class="button">Modify</button></a>
+            <a class="Logout"><button class="buttonLogout">Logout</button></a>
+            <a class="Delete"><button class="buttonDelete">Delete</button></a>
         </div>
         <!-- <a href="/modifie" class="modifie"><button class="button">modify</button></a> -->
     </div>
@@ -75,6 +77,39 @@
             console.error(error);
             let username = document.querySelector(".Username")
             username.textContent = "User not found"
+        });
+
+        let logout = document.querySelector(".Logout");
+        let Delete = document.querySelector(".Delete");
+        logout.addEventListener("click", function(event) {
+            let expires = "";
+            if (2) {
+                let date = new Date();
+                date.setTime(date.getTime() + (2 * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = "user_id" + "=" + (0 || "") + expires + "; path=/";
+            window.location.href = "/login";
+        });
+
+        Delete.addEventListener("click", function(event) {
+            let expires = "";
+            if (2) {
+                let date = new Date();
+                date.setTime(date.getTime() + (2 * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = "user_id" + "=" + (0 || "") + expires + "; path=/";
+            window.location.href = "/login";
+            fetch('http://localhost:8081/delete?id=' + encodeURIComponent(id), {
+                mode: 'cors',
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            }).then(response => response.json()).then(data => {
+                console.log(data)
+            })
         });
     </script>
 </body>

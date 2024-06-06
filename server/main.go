@@ -79,7 +79,19 @@ func main() {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"message": "Utilisateur enregistré avec succès"})
+		userID, _, _ := dbp.AuthenticateUser(user.Username, user.Password)
+
+		cookie := &http.Cookie{
+			Name:     "user_id",
+			Value:    userID,
+			SameSite: http.SameSiteStrictMode,
+			// 	HttpOnly: true,
+			MaxAge: 3600 * 24 * 30,
+		}
+		http.SetCookie(c.Writer, cookie)
+
+		// http.Redirect(c.Writer, c.Request, "/form?id="+userID, http.StatusFound)
+		c.JSON(http.StatusOK, gin.H{"message": userID})
 	})
 
 	router.POST("/login", func(c *gin.Context) {
