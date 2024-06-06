@@ -141,7 +141,7 @@ func WelcomeForm(c *gin.Context) {
 		}
 	}
 
-	_ = db.Exec("UPDATE users SET date_of_birth = ?, sport_id = ?, image = ? WHERE id = ?", birthday, sport, profilePicture, userId)
+	_ = db.Exec("UPDATE users SET secondary_sport = ? date_of_birth = ?, sport_id = ?, image = ? WHERE id = ?", sportsList, birthday, sport, profilePicture, userId)
 
 	c.JSON(http.StatusOK, gin.H{"message": "User information updated successfully"})
 	log.Printf("User information updated successfully: %s", userId)
@@ -200,7 +200,7 @@ func AccountForm(c *gin.Context) {
 		}
 	}
 
-	_ = db.Exec("UPDATE users SET username = ?, email = ?, biography = ?, sport_id = ?, image = ?, city = ? WHERE id = ?", username, email, biography, sport, profilePicture, city, userId)
+	_ = db.Exec("UPDATE users SET secondary_sport = ?, username = ?, email = ?, biography = ?, sport_id = ?, image = ?, city = ? WHERE id = ?", sportsList, username, email, biography, sport, profilePicture, city, userId)
 
 	c.JSON(http.StatusOK, gin.H{"message": "User information updated successfully"})
 	log.Printf("User information updated successfully: %s", userId)
