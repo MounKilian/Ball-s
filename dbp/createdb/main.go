@@ -1,7 +1,9 @@
 package main
 
 import (
-    "balls/dbp"
+	"balls/dbp"
+	"fmt"
+
 	_ "github.com/mattn/go-sqlite3"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -12,7 +14,10 @@ func main() {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	db.AutoMigrate(&dbp.User{}, &dbp.Strike{}, &dbp.Swipe{}, &dbp.Stat{})
+	err = db.AutoMigrate(&dbp.User{}, &dbp.Strike{}, &dbp.Swipe{}, &dbp.Stat{})
+    if err != nil {
+        fmt.Println(err)
+    }
 }
 
 /* func main() {
