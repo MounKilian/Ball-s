@@ -168,7 +168,6 @@ func AccountForm(c *gin.Context) {
 	if email == "" {
 		email = user.Email
 	}
-	// location := c.DefaultPostForm("location", user.)
 	biography := c.DefaultPostForm("biography", user.Biography)
 	if biography == "" {
 		biography = user.Biography
@@ -180,6 +179,10 @@ func AccountForm(c *gin.Context) {
 	profilePicture := c.DefaultPostForm("image", user.Image)
 	if profilePicture == "" {
 		profilePicture = user.Image
+	}
+	city := c.DefaultPostForm("location", user.City)
+	if city == "" {
+		city = user.City
 	}
 
 	var selectedSports []string
@@ -197,7 +200,7 @@ func AccountForm(c *gin.Context) {
 		}
 	}
 
-	_ = db.Exec("UPDATE users SET username = ?, email = ?, biography = ?, sport_id = ?, image = ? WHERE id = ?", username, email, biography, sport, profilePicture, userId)
+	_ = db.Exec("UPDATE users SET username = ?, email = ?, biography = ?, sport_id = ?, image = ?, city = ? WHERE id = ?", username, email, biography, sport, profilePicture, city, userId)
 
 	c.JSON(http.StatusOK, gin.H{"message": "User information updated successfully"})
 	log.Printf("User information updated successfully: %s", userId)
