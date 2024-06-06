@@ -12,10 +12,19 @@ import (
 	"strings"
 	"time"
 
+	"math/rand"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
+
+var Letters = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "T", "U", "V", "W", "X", "Y", "Z"}
+
+func selectRandomLetter() string {
+	randomIndex := rand.Intn(len(Letters) - 1)
+	return Letters[randomIndex]
+}
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
