@@ -14,10 +14,10 @@ func main() {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	err = db.AutoMigrate(&dbp.User{}, &dbp.Strike{}, &dbp.Swipe{}, &dbp.Stat{})
-    if err != nil {
-        fmt.Println(err)
-    }
+	err = db.AutoMigrate(&dbp.User{}, &dbp.Strike{}, &dbp.Miss{}, &dbp.Stat{}, &dbp.Match{})
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 /* func main() {

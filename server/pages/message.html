@@ -21,6 +21,12 @@
         <button type="submit">Envoyer</button>
     </form>
     <script>
+        let ws = new WebSocket('ws://localhost:8081/ws');
+
+        ws.onopen = function() {
+            console.log("WebSocket open");
+        };
+
         // Fonction pour récupérer les paramètres d'URL
         function getQueryParams() {
             const params = {};

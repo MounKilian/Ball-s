@@ -5,31 +5,33 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
+	"time"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 func main() {
-	last := &dbp.User{}
-	tx := dbp.DB.Last(last)
-	if tx.RowsAffected > 0 {
-		fmt.Println("last ID :", last.ID)
-	} else {
-		last.ID = 0
-	}
+	// last := &dbp.User{}
+	// tx := dbp.DB.Last(last)
+	// if tx.RowsAffected > 0 {
+	// 	fmt.Println("last ID :", last.ID)
+	// } else {
+	// 	last.ID = 0
+	// }
 
-	user := dbp.User{
-		Username: "Test : " + fmt.Sprint(last.ID+1),
-		Password: "test1",
-		Email:    "test" + fmt.Sprint(last.ID+1) + "@test.com",
-	}
+	// user := dbp.User{
+	// 	Username: "Test : " + fmt.Sprint(last.ID+1),
+	// 	Password: "test1",
+	// 	Email:    "test" + fmt.Sprint(last.ID+1) + "@test.com",
+	// }
 
-	dbp.DB.Create(&user)
-	userID := user.ID
+	// dbp.DB.Create(&user)
+	// userID := user.ID
 
-	fmt.Println("userID :", userID)
-	// CloneDb()
+	// fmt.Println("userID :", userID)
+	addMatches()
 }
 
 func Marshal(v any) string {
@@ -55,6 +57,27 @@ func CloneDb() {
 
 	if true && len(users) > 0 && len(stats) > 0 {
 		db2.Create(users)
-		// db2.Create(stats)
+		db2.Create(stats)
+	}
+}
+
+func addMatches() {
+	db := dbp.DB
+
+	rand.Seed(time.Now().UnixNano())
+
+	for i := 0; i < 10; i++ {
+		match := dbp.Match{
+			UserAID: rand.Intn(5) + 1,
+			UserBID: rand.Intn(5) + 1,
+		}
+		for match.UserAID == match.UserBID {
+			match.UserBID = rand.Intn(5) + 1
+		}
+
+		if err := db.Create(&match).Error; err != nil {
+			log.Printf("Error inserting match: %v", err)
+			return
+		}
 	}
 }

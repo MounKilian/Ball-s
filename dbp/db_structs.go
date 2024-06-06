@@ -1,10 +1,8 @@
 package dbp
 
 import (
-	"sync"
 	"time"
 
-	"github.com/gorilla/websocket"
 	"gorm.io/gorm"
 )
 
@@ -31,7 +29,15 @@ type Strike struct {
 	UserB   User
 }
 
-type Swipe struct {
+type Miss struct {
+	gorm.Model
+	UserAID int
+	UserA   User
+	UserBID int
+	UserB   User
+}
+
+type Match struct {
 	gorm.Model
 	UserAID int
 	UserA   User
@@ -45,10 +51,10 @@ type Stat struct {
 	Catégories string
 }
 
-type Room struct {
-	id         string
-	clients    map[*websocket.Conn]bool
-	register   chan *websocket.Conn
-	unregister chan *websocket.Conn
-	mu         sync.RWMutex
-}
+// type Room struct {
+// 	id         string
+// 	clients    map[*websocket.Conn]bool
+// 	register   chan *websocket.Conn
+// 	unregister chan *websocket.Conn
+// 	mu         sync.RWMutex
+// }

@@ -37,6 +37,7 @@ func main() {
 	router.POST("/uploadImg", UploadImg)
 	router.POST("/welcomeForm", WelcomeForm)
 	router.POST("/accountForm", AccountForm)
+	router.GET("/matchs", getAllMatches)
 
 	router.GET("/ws", handleWebSocket)
 
@@ -106,6 +107,14 @@ func getAllSports(c *gin.Context) {
 	sports := []dbp.Stat{}
 	db.Find(&sports, []dbp.Stat{})
 	result, _ := json.Marshal(&sports)
+	fmt.Fprintln(c.Writer, string(result))
+}
+
+func getAllMatches(c *gin.Context) {
+	db := dbp.DB
+	matches := []dbp.Match{}
+	db.Preload("UserA").Preload("UserB").Find(&matches)
+	result, _ := json.Marshal(&matches)
 	fmt.Fprintln(c.Writer, string(result))
 }
 
