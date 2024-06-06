@@ -93,11 +93,9 @@ func main() {
 
 		// Création d'un cookie avec l'ID utilisateur
 		cookie := &http.Cookie{
-			Name:     "user_id",
-			Value:    userID,
-			Path:     "/",
-			HttpOnly: true,
-			MaxAge:   3600,
+			Name:   "user_id",
+			Value:  userID,
+			MaxAge: 3600,
 		}
 		http.SetCookie(c.Writer, cookie)
 
@@ -169,30 +167,29 @@ func sort() {
 	db := dbp.DB
 	users := []dbp.User{}
 	swiped := []int64{}
-	
-	
+
 	db.Not(&swiped).Find(&users)
-	
+
 	if len(users) == 0 {
-			fmt.Println("No users found")
-			return
+		fmt.Println("No users found")
+		return
 	}
 
-	rand.Seed(time.Now().UnixNano()) 
+	rand.Seed(time.Now().UnixNano())
 	startUser := rand.Intn(len(users))
 	var potential []dbp.User
-	
+
 	for i := 0; i < len(users); i++ {
-			if users[startUser].City == users[i].City && i != startUser {
-					if users[startUser].Sport == users[i].Sport {
-							potential = append(potential, users[i])
-					}
+		if users[startUser].City == users[i].City && i != startUser {
+			if users[startUser].Sport == users[i].Sport {
+				potential = append(potential, users[i])
 			}
+		}
 	}
 
 	fmt.Println(users[startUser].ID)
 	fmt.Println("potential")
 	for i := 0; i < len(potential); i++ {
-			fmt.Println(potential[i].ID)
+		fmt.Println(potential[i].ID)
 	}
 }

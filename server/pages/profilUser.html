@@ -35,7 +35,9 @@
             const parts = value.split(`; ${name}=`);
             if (parts.length === 2) return parts.pop().split(';').shift();
         }
+
         let id = getCookie("user_id")
+        console.log(id)
 
         fetch('http://localhost:8081/user?id=' + encodeURIComponent(id), {
             mode: 'cors',
@@ -43,7 +45,13 @@
             headers: {
                 'Content-Type': 'application/json'
             },
-        }).then(response => response.json()).then(data => {
+        }).then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error(response.statusText);
+            }
+        }).then(data => {
             console.log(data.Username)
             let username = document.querySelector(".Username")
             username.textContent = data.Username
@@ -52,14 +60,18 @@
             let profilePicture = document.querySelector(".profilePicture")
             profilePicture.src = data.Image
             let Location = document.querySelector(".Location")
-            if (data.City != undefined) {
+            if (data.City!= undefined) {
                 Location.textContent = "Location: " + data.City 
             } else {
                 Location.textContent = "Location: "
             }
             let OtherSports = document.querySelector(".OtherSports")
             OtherSports.textContent = "Other Sports: " + data.SecondarySport
-        })
+        }).catch(error => {
+            console.error(error);
+            let username = document.querySelector(".Username")
+            username.textContent = "User not found"
+        });
     </script>
 </body>
 </html>

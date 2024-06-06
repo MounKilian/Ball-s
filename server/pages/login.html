@@ -83,7 +83,7 @@
                 body: JSON.stringify(formData)
             }).then(response => {
                 if (response.ok) {
-                    window.location.href = '/home';
+                    window.location.href = '/';
                 } else {
                     throw new Error('Erreur lors de la soumission du formulaire.');
                 }

@@ -55,7 +55,7 @@ func getUserByID(c *gin.Context) {
 		result, _ := json.Marshal(user)
 		fmt.Fprintln(c.Writer, string(result))
 	} else {
-		fmt.Fprintln(c.Writer, "User not found")
+		c.JSON(http.StatusNotFound, "User not found")
 	}
 }
 
