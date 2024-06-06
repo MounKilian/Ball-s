@@ -55,6 +55,7 @@ func main() {
 		u.Image = image
 		db.Save(&u)
 	}
+	// addMatches()
 }
 
 func Marshal(v any) string {
@@ -153,7 +154,7 @@ func AddSwipe() {
 	users := []dbp.User{}
 	swipes := []int{}
 
-	db.Find(&swipes, &dbp.Swipe{})
+	db.Find(&swipes, &dbp.Miss{})
 	db.Find(&users)
 
 	for f := 0; f < len(users); f++ {

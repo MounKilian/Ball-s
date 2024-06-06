@@ -21,65 +21,62 @@
         <button type="submit">Envoyer</button>
     </form>
     <script>
-        // Fonction pour récupérer les paramètres d'URL
-        function getQueryParams() {
-            const params = {};
-            const queryString = window.location.search.substring(1);
-            const regex = /([^&=]+)=([^&]*)/g;
-            let m;
-            while (m = regex.exec(queryString)) {
-                params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
-            }
-            return params;
-        }
+        let ws = new WebSocket('ws://localhost:8081/ws');
 
-        // Utilisation des paramètres d'URL pour afficher les informations du contact
-        const params = getQueryParams();
-        const contactId = params['contact'];
-
-        // Simulation d'une base de données de contacts
-        const contacts = {
-            'contact1': {
-                name: 'Nom du Contact 1',
-                avatar: '/static/images/profile.jpg'
-            },
-            'contact2': {
-                name: 'Nom du Contact 2',
-                avatar: '/static/images/profile.jpg'
-            }
+        ws.onopen = function() {
+            console.log("WebSocket open");
         };
 
-        if (contacts[contactId]) {
-            document.getElementById('profile-name').textContent = contacts[contactId].name;
-            document.getElementById('profile-avatar').src = contacts[contactId].avatar;
+        ws.onmessage = function(event) {
+            console.log("Received message:", event.data);
+            displayMessageforOther(event.data);      
+        };
+
+        function sendMessage(message) {
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(message);
+            } else {
+                console.error("WebSocket is not open");
+            }
         }
 
         document.getElementById('message-form').addEventListener('submit', function(event) {
             event.preventDefault();
-
             var messageInput = document.getElementById('message-input');
             var messageText = messageInput.value.trim();
             if (messageText === "") {
                 return;
             }
             messageInput.value = '';
+            displayMessage(messageText);      
+            sendMessage(messageText);
+        });
 
+        function displayMessageforOther(message) {
             var messageElement = document.createElement('div');
             messageElement.className = 'chat-message';
 
-            var avatarElement = document.createElement('img');
-            avatarElement.src = '/static/images/avatar.png';
-            avatarElement.alt = 'Avatar';
-            messageElement.appendChild(avatarElement);
-
             var bubbleElement = document.createElement('div');
             bubbleElement.className = 'chat-bubble';
-            bubbleElement.textContent = messageText;
+            bubbleElement.textContent = message;
             messageElement.appendChild(bubbleElement);
 
             document.querySelector('.chat-container').appendChild(messageElement);
             document.querySelector('.chat-container').scrollTop = document.querySelector('.chat-container').scrollHeight; 
-        });
+        }
+
+        function displayMessage(message) {
+            var messageElement = document.createElement('divOther');
+            messageElement.className = 'chat-messageOther';
+
+            var bubbleElement = document.createElement('divOther');
+            bubbleElement.className = 'chat-bubbleOther';
+            bubbleElement.textContent = message;
+            messageElement.appendChild(bubbleElement);
+
+            document.querySelector('.chat-container').appendChild(messageElement);
+            document.querySelector('.chat-container').scrollTop = document.querySelector('.chat-container').scrollHeight; 
+        }
     </script>
 </body>
 </html>

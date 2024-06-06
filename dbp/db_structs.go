@@ -29,12 +29,22 @@ type Strike struct {
 	UserB   User
 }
 
-type Swipe struct {
+type Miss struct {
 	gorm.Model
 	UserAID int
 	UserA   User
 	UserBID int
 	UserB   User
+}
+
+type Match struct {
+	gorm.Model
+	UserAID    int
+	UserA      User
+	UserBID    int
+	UserB      User
+	RoomName   string
+	Historical string
 }
 
 type Stat struct {

@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"time"
 
@@ -37,7 +39,9 @@ func main() {
 		c.HTML(http.StatusOK, "home.html", nil)
 	})
 
-	router.GET("/profilUser", profileUser)
+	router.GET("/profilUser", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "profilUser.html", nil)
+	})
 
 	router.GET("/register", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "register.html", nil)
@@ -112,8 +116,92 @@ func main() {
 		c.HTML(http.StatusOK, "welcomePage.html", nil)
 	})
 
+	router.GET("/account", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "accountPage.html", nil)
+	})
+
 	if err := router.Run(":8080"); err != nil {
 		log.Fatal(err)
+	}
+}
+
+func addSport() {
+	db := dbp.DB
+	// stat := dbp.Stat{
+	// 	ID: 1,
+	// 	Name: "",
+	// }
+	// user2 := dbp.User{
+	// 	Username:    "user2",
+	// 	DateOfBirth: time.Now(),
+	// }
+	// db.Create(&user1)
+	for _, v := range []string{"Football", "Basketball", "Tennis", "Baseball", "Surf", "Volley", "Pingpong", "Golf", "Natation", "Rugby", "Bowling", "Handball", "Escalade", "Cyclisme", "Sauts", "Plongée", "Acrobranche", "Tyroliènne", "Course", "Musculation", "Randonnée", "Paddle", "Acrobranche", "Ski", "Boxe", "MMA", "Kapoera", "Pétanque", "Gymnastique", "Danse", "Karting", "Paintball", "Judo", "Karaté", "Escrime", "Ultimate", "LaserGame", "Je ne fait pas que du sport"} {
+
+		db.Create(&dbp.Stat{Name: v})
+	}
+	// db.Create(&stat)
+}
+
+func addUsers() {
+
+	last := &dbp.User{}
+	tx := dbp.DB.Last(last)
+	if tx.RowsAffected > 0 {
+		fmt.Println("last ID :", last.ID)
+	} else {
+		last.ID = 0
+	}
+
+	for i := 0; i < 50; i++ {
+		db := dbp.DB
+		sport := &dbp.Stat{ID: uint(rand.Intn(17))}
+		db.First(&sport, sport.ID)
+		cityrand := rand.Intn(2)
+		var cityname string
+		if cityrand == 0 {
+			cityname = "paris"
+		} else {
+			cityname = "Lyon"
+		}
+		user := dbp.User{
+			Username:    "User",
+			DateOfBirth: time.Now(),
+			Sport:       sport.Name,
+			City:        cityname,
+		}
+		db.Create(&user)
+	}
+}
+
+func sort() {
+	db := dbp.DB
+	users := []dbp.User{}
+	swiped := []int64{}
+
+	db.Not(&swiped).Find(&users)
+
+	if len(users) == 0 {
+		fmt.Println("No users found")
+		return
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	startUser := rand.Intn(len(users))
+	var potential []dbp.User
+
+	for i := 0; i < len(users); i++ {
+		if users[startUser].City == users[i].City && i != startUser {
+			if users[startUser].Sport == users[i].Sport {
+				potential = append(potential, users[i])
+			}
+		}
+	}
+
+	fmt.Println(users[startUser].ID)
+	fmt.Println("potential")
+	for i := 0; i < len(potential); i++ {
+		fmt.Println(potential[i].ID)
 	}
 }
 
