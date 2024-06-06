@@ -161,12 +161,26 @@ func AccountForm(c *gin.Context) {
 	}
 
 	username := c.PostForm("username")
-	// username = if(username == "", user.Name, username)
+	if username == "" {
+		username = user.Username
+	}
 	email := c.DefaultPostForm("email", user.Email)
+	if email == "" {
+		email = user.Email
+	}
 	// location := c.DefaultPostForm("location", user.)
 	biography := c.DefaultPostForm("biography", user.Biography)
+	if biography == "" {
+		biography = user.Biography
+	}
 	sport := c.DefaultPostForm("sport", user.Sport.Name)
+	if sport == "" {
+		sport = user.Sport.Name
+	}
 	profilePicture := c.DefaultPostForm("image", user.Image)
+	if profilePicture == "" {
+		profilePicture = user.Image
+	}
 
 	var selectedSports []string
 	if sports, exists := c.Request.PostForm["sports"]; exists {
