@@ -5,22 +5,22 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"time"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 func main() {
-	last := &dbp.User{}
-	dbp.DB.Last(&last)
+	// last := &dbp.User{}
+	// dbp.DB.Last(&last)
+	// // i := last.ID
+	// for i := last.ID + 1; i <= 5000; i++ {
+	// 	// time.Sleep(1 * time.Second)
 
-	for i := last.ID; i < 5000; i++ {
-		time.Sleep(1 * time.Second)
+	// 	dbp.RegisterUser("Test : "+fmt.Sprint(i), "test"+fmt.Sprint(i)+"@test.com", "test")
+	// 	fmt.Println("ID :", i)
+	// }
 
-		err := dbp.RegisterUser("Test : "+fmt.Sprint(0), "test"+fmt.Sprint(i)+"@test.com", "test")
-		fmt.Println("ID :", i, "error :", err)
-	}
 	// CloneDb("test")
 }
 
