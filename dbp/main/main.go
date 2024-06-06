@@ -172,9 +172,9 @@ func AccountForm(c *gin.Context) {
 	if biography == "" {
 		biography = user.Biography
 	}
-	sport := c.DefaultPostForm("sport", user.Sport.Name)
+	sport := c.DefaultPostForm("sport", user.Sport)
 	if sport == "" {
-		sport = user.Sport.Name
+		sport = user.Sport
 	}
 	profilePicture := c.DefaultPostForm("image", user.Image)
 	if profilePicture == "" {
