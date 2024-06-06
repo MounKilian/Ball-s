@@ -12,16 +12,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var router *gin.Engine
+
 func main() {
-	// addUsers()
-	// addSwipe()
-	// db := dbp.DB
-	// users := []dbp.User{}
-	// db.Find(&users, &dbp.User{})
-	// usertosortfrom := rand.Intn(len(users))
-	// sort(users[usertosortfrom])
-	router := gin.Default()
-	// sort()
+	router = gin.Default()
 	router.LoadHTMLGlob("pages/*.html")
 	router.Static("/static", "./static")
 
@@ -59,15 +53,16 @@ func main() {
 		c.HTML(http.StatusOK, "welcomePage.html", nil)
 	})
 
+	router.GET("/account", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "accountPage.html", nil)
+	})
+
+	addUsers()
+	addSport()
+	//addSwipe()
+
 	if err := router.Run(":8080"); err != nil {
 		log.Fatal(err)
-	}
-
-	// Pour le test: affiche les utilisateurs triés
-	fmt.Println("Utilisateur de départ:", users[usertosortfrom].ID)
-	fmt.Println("Utilisateurs triés:")
-	for _, user := range sortedUsers {
-		fmt.Println(user.ID)
 	}
 }
 
@@ -115,32 +110,53 @@ func handleLogin(c *gin.Context) {
 		return
 	}
 
-		// Création d'un cookie avec l'ID utilisateur
-		cookie := &http.Cookie{
-			Name:   "user_id",
-			Value:  userID,
-			MaxAge: 3600,
-		}
-		http.SetCookie(c.Writer, cookie)
-		// Après la définition de handleLogin
-
-		c.JSON(http.StatusOK, gin.H{"message": "Authentification réussie"})
-		}
-
-		// Définir les routes en dehors de la fonction main
-		router.GET("/form", func(c *gin.Context) {
-			c.HTML(http.StatusOK, "welcomePage.html", nil)
-		})
-
-router.GET("/account", func(c *gin.Context) {
-	c.HTML(http.StatusOK, "accountPage.html", nil)
-})
-
-
-	if err := router.Run(":8080"); err != nil {
-		log.Fatal(err)
+	// Création d'un cookie avec l'ID utilisateur
+	cookie := &http.Cookie{
+		Name:   "user_id",
+		Value:  userID,
+		MaxAge: 3600,
 	}
+	http.SetCookie(c.Writer, cookie)
+
+	c.JSON(http.StatusOK, gin.H{"message": "Authentification réussie"})
 }
+
+// func addSwipe() {
+// 	db := dbp.DB
+// 	users := []dbp.User{}
+// 	swiped := []int64{}
+
+// 	db.Not(&swiped).Find(&users)
+
+// 	if len(users) == 0 {
+// 		fmt.Println("No users found")
+// 		return
+// 	}
+
+// 	rand.Seed(time.Now().UnixNano())
+// 	startUser := rand.Intn(len(users))
+// 	var potential []dbp.User
+
+// 	for i := 0; i < len(users); i++ {
+// 		if users[startUser].City == users[i].City && i != startUser {
+// 			if users[startUser].Sport == users[i].Sport {
+// 				potential = append(potential, users[i])
+// 			}
+// 		}
+// 	}
+
+// 	rand.Seed(time.Now().UnixNano())
+// 	rand.Shuffle(len(potential), func(i, j int) { potential[i], potential[j] = potential[j], potential[i] })
+// 	// result, _ := json.Marshal(&users)
+// 	// resultpot, _ := json.Marshal((&potential))
+// 	fmt.Println(startUser.ID)
+// 	fmt.Println("potential")
+// 	for i := 0; i < len(potential); i++ {
+// 		fmt.Println(potential[i].ID)
+// 	}
+// 	return
+// }
+
 
 func addSport() {
 	db := dbp.DB
@@ -157,7 +173,6 @@ func addSport() {
 
 		db.Create(&dbp.Stat{Name: v})
 	}
-
 	// db.Create(&stat)
 }
 
@@ -170,48 +185,28 @@ func addUsers() {
 		last.ID = 0
 	}
 
-	for i := 0; i < 300; i++ {
+	for i := 0; i < 50; i++ {
 		db := dbp.DB
-		sportid := rand.Intn(17)
+		sport := &dbp.Stat{ID: uint(rand.Intn(17))}
+		db.First(&sport, sport.ID)
 		cityrand := rand.Intn(2)
-		genderand := rand.Intn(2)
-		genderprefrand := rand.Intn(2)
 		var cityname string
-		var gender string
-		var genderpref string
 		if cityrand == 0 {
 			cityname = "paris"
 		} else {
 			cityname = "Lyon"
 		}
-
-		if genderand == 0 {
-			gender = "men"
-		} else {
-			gender = "women"
-		}
-
-		if genderprefrand == 0 {
-			genderpref = "men"
-		} else {
-			genderpref = "women"
-		}
 		user := dbp.User{
-			Username:      "User",
-			DateOfBirth:   time.Now(),
-			Sport:         sport.Name,
-			Gender:        gender,
-			DesiredGender: genderpref,
-			City:          cityname,
+			Username:    "User",
+			DateOfBirth: time.Now(),
+			Sport:       sport.Name,
+			City:        cityname,
 		}
-
 		db.Create(&user)
-
 	}
 }
 
-func addSwipe() {
-
+func sort() {
 	db := dbp.DB
 	users := []dbp.User{}
 	swiped := []int64{}
@@ -235,14 +230,9 @@ func addSwipe() {
 		}
 	}
 
-	rand.Seed(time.Now().UnixNano())
-	rand.Shuffle(len(potential), func(i, j int) { potential[i], potential[j] = potential[j], potential[i] })
-	// result, _ := json.Marshal(&users)
-	// resultpot, _ := json.Marshal((&potential))
-	fmt.Println(startUser.ID)
+	fmt.Println(users[startUser].ID)
 	fmt.Println("potential")
 	for i := 0; i < len(potential); i++ {
 		fmt.Println(potential[i].ID)
 	}
-	return potential
 }
