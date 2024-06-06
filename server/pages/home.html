@@ -10,10 +10,11 @@
 
 <body>
     <div id="bg-image">
-        <img src="../static/images/profile.jpg" alt="avatar of the person" width="100%" height="100%">
+        <img src="/static/img/_08095b50-f04c-4ff5-9750-26debab1ba96.jpg" alt="avatar of the person" width="100%"
+            height="100%">
     </div>
     <div id="buttonrow">
-        <a href="/profile" class="button" id="profile"></a>
+        <a href="/profilUser" class="button" id="profile"></a>
         <a href="/discussion" class="button" id="msg"></a>
     </div>
     <div id="cardrow">
@@ -24,52 +25,46 @@
         </a>
         <a id="strike" class="button"></a>
     </div>
+
+
+    <script src="/static/js/swipe-animation.js"></script>
     <script>
         let bg = document.querySelector("#bg-image>img")
-
-        let bgcard = document.querySelector("#bgcard")
+        let nextcard = document.querySelector("#bgcard")
         let card = document.querySelector("a.card")
         let ball = document.querySelector("#ball")
 
-        let strike = document.querySelector("#strike")
-        let miss = document.querySelector("#miss")
-
-        const animationOptions = {
-            duration: 1000,
-            iterations: 1,
-            easing: 'ease-in-out'
+        window.getCookie = function (name) {
+            var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+            if (match) return match[2];
         }
 
-        //met la photo du profile en fond
-        let nextI = "/static/images/avatar.png"
-        bgcard.style.backgroundImage = `url(${nextI})`
+        let potentials = []
+        let potentials_position = 0
+
+        // Récupérer les potentiels matchs
+        fetch("http://localhost:8081/sort?id=" + encodeURIComponent(getCookie("user_id")))
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                potentials = data.message
+                next()
+            })
+
+        function next() {
+            ismoving = false
+            let first = potentials[potentials_position].Image ? potentials[potentials_position].Image : "/static/images/avatar.png"
+            let second = potentials.length >= (potentials_position + 2) && potentials[potentials_position + 1].Image ? potentials[potentials_position + 1].Image : "/static/images/avatar.png"
+            bg.src = first
+            card.style.backgroundImage = `url(${first})`
+            nextcard.style.backgroundImage = `url(${second})`
+            potentials_position = (potentials_position + 1) % potentials.length
+        }
 
         function animEnd() {
             ball.removeAttribute("style")
-            bg.src = nextI
-            card.style.backgroundImage = `url(${nextI})`
+            next()
         }
-
-        const move_right = () => {
-            ball.style.display = "none";
-            card.style.backgroundColor = "green";
-            card.animate(
-                { backgroundPosition: '-100vw', transform: "translate3d(80%, 0, 0)" },
-                animationOptions
-            ).addEventListener("finish", animEnd)
-        }
-
-        const move_left = () => {
-            ball.style.display = "none";
-            card.style.backgroundColor = "red";
-            card.animate(
-                { backgroundPosition: '100vw', transform: "translate3d(-80%, 0, 0)" },
-                animationOptions
-            ).addEventListener("finish", animEnd)
-        }
-
-        strike.addEventListener("click", move_right)
-        miss.addEventListener("click", move_left)
     </script>
     <script src="/static/js/handle-touch.js"></script>
 </body>

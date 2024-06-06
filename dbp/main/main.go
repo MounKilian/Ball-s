@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -25,6 +27,23 @@ func main() {
 	router.GET("/sports", getAllSports)
 	router.POST("/uploadImg", UploadImg)
 	router.POST("/welcomeForm", WelcomeForm)
+	router.GET("/sort", func(c *gin.Context) {
+		db := dbp.DB
+		user := dbp.User{}
+		s, ok := c.GetQuery("id")
+		if !ok {
+			fmt.Fprintln(c.Writer, "Id not provided in get request")
+			return
+		}
+		id, err := strconv.Atoi(s)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Error converting id to int: %v", err)})
+			return
+		}
+		db.First(&user, id)
+		sortedUsers := sort(user)
+		c.JSON(http.StatusFound, gin.H{"message": sortedUsers})
+	})
 
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
@@ -144,4 +163,35 @@ func WelcomeForm(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "User information updated successfully"})
 	log.Printf("User information updated successfully: %s", userId)
+}
+
+func sort(startUser dbp.User) []dbp.User {
+	db := dbp.DB
+	users := []dbp.User{}
+	swipes := []int{}
+	db.Model(&dbp.Swipe{}).Where(&dbp.Swipe{UserAID: int(startUser.ID)}).Pluck("user_b_id", &swipes)
+
+	db.Select("id", "username", "biography", "gender", "sport", "secondary_sport", "image", "city", "date_of_birth").Not(swipes).Find(&users)
+
+	fmt.Println(swipes)
+
+	var potential []dbp.User
+
+	for i := 0; i < len(users); i++ {
+		if startUser.City == users[i].City && users[i].ID != startUser.ID {
+			if startUser.Sport == users[i].Sport && startUser.DesiredGender == users[i].Gender {
+				potential = append(potential, users[i])
+			}
+		}
+	}
+
+	rand.Shuffle(len(potential), func(i, j int) { potential[i], potential[j] = potential[j], potential[i] })
+	// result, _ := json.Marshal(&users)
+	// resultpot, _ := json.Marshal((&potential))
+	fmt.Println(startUser.ID)
+	fmt.Println("potential")
+	for i := 0; i < len(potential); i++ {
+		fmt.Println(potential[i].ID)
+	}
+	return potential
 }

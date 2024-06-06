@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,6 +15,7 @@
             margin: 0;
             font-family: Arial, sans-serif;
         }
+
         .container {
             text-align: center;
             width: 300px;
@@ -21,20 +23,28 @@
             border: 1px solid #ccc;
             border-radius: 10px;
         }
+
         .container h2 {
             margin-bottom: 20px;
             font-size: 24px;
         }
-        .container label, .container input, .container button {
+
+        .container label,
+        .container input,
+        .container button {
             display: block;
             width: 100%;
             margin-bottom: 10px;
         }
-        .container input[type="text"], .container input[type="password"] {
+
+        .container input[type="text"],
+        .container input[type="password"] {
             padding: 10px;
             font-size: 16px;
         }
-        .container input[type="submit"], .container button {
+
+        .container input[type="submit"],
+        .container button {
             padding: 10px;
             font-size: 16px;
             cursor: pointer;
@@ -43,15 +53,18 @@
             color: #fff;
             border-radius: 5px;
         }
+
         .container button {
             background-color: #555;
         }
+
         .container .signup-link {
             margin-top: 10px;
             font-size: 14px;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h2>Connexion</h2>
@@ -83,7 +96,7 @@
                 body: JSON.stringify(formData)
             }).then(response => {
                 if (response.ok) {
-                    window.location.href = '/home';
+                    window.location.href = '/';
                 } else {
                     throw new Error('Erreur lors de la soumission du formulaire.');
                 }
@@ -95,4 +108,5 @@
         }
     </script>
 </body>
+
 </html>
