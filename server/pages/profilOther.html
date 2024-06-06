@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BALL'S</title>
+    <link rel="stylesheet" href="../static/css/profileUser.css">
+</head>
+
+<body>
+    <div class="header">
+        <h1>BALL'S</h1>
+    </div>
+    <div class="banner">
+        <a id="hrefid"><img class="backarrow" src="../static/image/wholecirclearrowgigacombowowamazingreallycool.png" alt="backarrow"></a>
+    </div>
+    <div class="core">
+
+        <img class="profilePicture" src="" alt="your profile picture">
+        <img class="ball" src="../static/image/ball.svg" alt="sportPicture">
+
+        <div class="rightcore">
+            <p class="Username"></p>
+            <p class="biography"></p>
+        </div>
+    </div>
+    <div class="down">
+        <div class="writing">
+            <p class="Location"></p>
+            <p class="OtherSports">Other sport : no other sport</p>
+        </div>
+    </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id')
+        document.getElementById("hrefid").href = "/"
+
+        fetch('http://localhost:8081/user?id=' + encodeURIComponent(id), {
+            mode: 'cors',
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }).then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error(response.statusText);
+            }
+        }).then(data => {
+            console.log(data.Username)
+            let username = document.querySelector(".Username")
+            username.textContent = data.Username
+            let biography = document.querySelector(".biography")
+            biography.textContent = data.Biography
+            let profilePicture = document.querySelector(".profilePicture")
+            profilePicture.src = data.Image
+            let Location = document.querySelector(".Location")
+            if (data.City != undefined) {
+                Location.textContent = "Location: " + data.City
+            } else {
+                Location.textContent = "Location: "
+            }
+            let OtherSports = document.querySelector(".OtherSports")
+            OtherSports.textContent = "Other Sports: " + data.SecondarySport
+        }).catch(error => {
+            console.error(error);
+            let username = document.querySelector(".Username")
+            username.textContent = "User not found"
+        });
+    </script>
+</body>
+
+</html>

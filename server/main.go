@@ -43,6 +43,10 @@ func main() {
 		c.HTML(http.StatusOK, "profilUser.html", nil)
 	})
 
+	router.GET("/profilOther", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "profilOther.html", nil)
+	})
+
 	router.GET("/register", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "register.html", nil)
 	})
@@ -105,7 +109,7 @@ func main() {
 			Value:    userID,
 			SameSite: http.SameSiteStrictMode,
 			// 	HttpOnly: true,
-			MaxAge: 3600 * 24 * 30, // Durée de vie sdu cookie en secondes (1 heure ici)
+			MaxAge: 3600 * 24 * 30,
 		}
 		http.SetCookie(c.Writer, cookie)
 
