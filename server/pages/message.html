@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/css/message.css">
+</head>
+<body>
+    <header class="chat-header">
+        <a href="/discussion" class="contacts-link">Contacts</a>
+        <div class="profile-info">
+            <img src="../static/images/profile.jpg" alt="Profile Avatar" class="profile-avatar" id="profile-avatar">
+            <span class="profile-name" id="profile-name">Nom du Contact</span>
+        </div>
+    </header>
+    <div class="chat-container">
+        <!-- Les messages de chat seront ajoutés ici -->
+    </div>
+    <form id="message-form">
+        <input type="text" id="message-input" placeholder="Tapez votre message ici...">
+        <button type="submit">Envoyer</button>
+    </form>
+    <script>
+        // Fonction pour récupérer les paramètres d'URL
+        function getQueryParams() {
+            const params = {};
+            const queryString = window.location.search.substring(1);
+            const regex = /([^&=]+)=([^&]*)/g;
+            let m;
+            while (m = regex.exec(queryString)) {
+                params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+            }
+            return params;
+        }
+
+        // Utilisation des paramètres d'URL pour afficher les informations du contact
+        const params = getQueryParams();
+        const contactId = params['contact'];
+
+        // Simulation d'une base de données de contacts
+        const contacts = {
+            'contact1': {
+                name: 'Nom du Contact 1',
+                avatar: '/static/images/profile.jpg'
+            },
+            'contact2': {
+                name: 'Nom du Contact 2',
+                avatar: '/static/images/profile.jpg'
+            }
+        };
+
+        if (contacts[contactId]) {
+            document.getElementById('profile-name').textContent = contacts[contactId].name;
+            document.getElementById('profile-avatar').src = contacts[contactId].avatar;
+        }
+
+        document.getElementById('message-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var messageInput = document.getElementById('message-input');
+            var messageText = messageInput.value.trim();
+            if (messageText === "") {
+                return;
+            }
+            messageInput.value = '';
+
+            var messageElement = document.createElement('div');
+            messageElement.className = 'chat-message';
+
+            var avatarElement = document.createElement('img');
+            avatarElement.src = '/static/images/avatar.png';
+            avatarElement.alt = 'Avatar';
+            messageElement.appendChild(avatarElement);
+
+            var bubbleElement = document.createElement('div');
+            bubbleElement.className = 'chat-bubble';
+            bubbleElement.textContent = messageText;
+            messageElement.appendChild(bubbleElement);
+
+            document.querySelector('.chat-container').appendChild(messageElement);
+            document.querySelector('.chat-container').scrollTop = document.querySelector('.chat-container').scrollHeight; 
+        });
+    </script>
+</body>
+</html>

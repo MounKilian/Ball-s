@@ -47,6 +47,6 @@ func CloneDb(dbName string) {
 
 	if true && len(users) > 0 && len(stats) > 0 {
 		db2.Create(users)
-		db2.Create(stats)
+		// db2.Create(stats)
 	}
 }
