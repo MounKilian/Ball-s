@@ -8,18 +8,17 @@ import (
 
 type User struct {
 	gorm.Model
-	Username    string
-	Email       string
-	Password    string
-	Image       string
-	Biography   string
-	Gender      string
-	Genderpref  string
-	swiped      []string
-	SportID     int
-	Sport       Stat
-	DateOfBirth time.Time
-	City        string
+	Username      string
+	Email         string
+	Password      string
+	Image         string
+	Biography     string
+	Gender        string
+	DesiredGender string
+	SportID       int
+	Sport         Stat
+	DateOfBirth   time.Time
+	City          string
 }
 
 type Strike struct {
