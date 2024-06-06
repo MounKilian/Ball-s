@@ -1,0 +1,110 @@
+body,
+html {
+    height: 100%;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+}
+
+body {
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#bg-image {
+    position: absolute;
+
+    /* The image used */
+    background-color: black;
+
+    /* Full height/width */
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+#bg-image>img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
+
+    /* Add the blur effect */
+    filter: blur(1.5rem);
+    -webkit-filter: blur(1.5rem);
+}
+
+#cardrow {
+    display: flex;
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    gap: 10%;
+}
+
+#bgcard {
+    position: absolute;
+}
+
+.card {
+    position: relative;
+    aspect-ratio: 9 / 16;
+    height: 95%;
+    max-width: 85%;
+    background: center / cover no-repeat url("../images/profile.jpg");
+    border-radius: 20px;
+}
+
+#ball {
+    aspect-ratio: 1;
+    position: absolute;
+    width: 20%;
+    bottom: 4%;
+    right: 4%;
+    background: center / 75% no-repeat url("../images/sports/soccer-ball.svg"), white;
+    z-index: 1;
+}
+
+#buttonrow {
+    position: absolute;
+    width: 100%;
+    top: 33px;
+    z-index: 1;
+}
+
+.button {
+    aspect-ratio: 1;
+    position: absolute;
+    width: 8%;
+    min-width: 70px;
+    border-radius: 50%;
+}
+
+#profile {
+    left: 4.58%;
+    background: center / cover url("../images/avatar.png");
+}
+
+#msg {
+    right: 4.58%;
+    background: center / 65% no-repeat url("../images/msg.png"), white;
+}
+
+#miss {
+    position: initial;
+    transform: rotate(45deg);
+    background: center / 65% no-repeat url("../images/croix.png"), red;
+}
+
+#strike {
+    position: initial;
+    background: center / 65% no-repeat url("../images/altere.png"), green;
+}

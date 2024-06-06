@@ -1,16 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rencontre Sportive</title>
-    <link rel="stylesheet" href="../static/css/home.css">
+    <link rel="stylesheet" href="../static/css/strike.css">
 </head>
+
 <body>
-    <div class="container">
-        <h1>Bienvenue sur notre site de rencontre sportif</h1>
-        <p>Trouvez votre partenaire de sport idéal et restez motivé !</p>
-        <a href='/login'>Connexion</a> | <a href='/register'>Inscription</a>
+    <div id="bg-image">
+        <img src="../static/images/profile.jpg" alt="avatar of the person" width="100%" height="100%">
     </div>
+    <div id="buttonrow">
+        <a href="/profile" class="button" id="profile"></a>
+        <a href="/messages" class="button" id="msg"></a>
+    </div>
+    <div id="cardrow">
+        <a id="miss" class="button"></a>
+        <div id="bgcard" class="card"></div>
+        <a class="card">
+            <div id="ball" class="button" title="football"></div>
+        </a>
+        <a id="strike" class="button"></a>
+    </div>
+    <script>
+        let bg = document.querySelector("#bg-image>img")
+
+        let bgcard = document.querySelector("#bgcard")
+        let card = document.querySelector("a.card")
+        let ball = document.querySelector("#ball")
+
+        let strike = document.querySelector("#strike")
+        let miss = document.querySelector("#miss")
+
+        const animationOptions = {
+            duration: 1000,
+            iterations: 1,
+            easing: 'ease-in-out'
+        }
+
+        //met la photo du profile en fond
+        let nextI = "/static/images/avatar.png"
+        bgcard.style.backgroundImage = `url(${nextI})`
+
+        function animEnd() {
+            ball.removeAttribute("style")
+            bg.src = nextI
+            card.style.backgroundImage = `url(${nextI})`
+        }
+
+        strike.addEventListener("click", () => {
+            ball.style.display = "none";
+            card.style.backgroundColor = "green";
+            card.animate(
+                { backgroundPosition: '-100vw', transform: "translate3d(80%, 0, 0)" },
+                animationOptions
+            ).addEventListener("finish", animEnd)
+        })
+
+        miss.addEventListener("click", () => {
+            ball.style.display = "none";
+            card.style.backgroundColor = "red";
+            card.animate(
+                { backgroundPosition: '100vw', transform: "translate3d(-80%, 0, 0)" },
+                animationOptions
+            ).addEventListener("finish", animEnd)
+        })
+    </script>
 </body>
+
 </html>
