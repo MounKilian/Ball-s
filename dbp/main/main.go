@@ -25,7 +25,15 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
+type Client struct {
+	conn *websocket.Conn
+	send chan []byte
+}
+
+var clients = make(map[*Client]bool)
+
 func main() {
+
 	router := gin.Default()
 
 	router.LoadHTMLGlob("pages/*.html")
@@ -62,17 +70,51 @@ func handleWebSocket(c *gin.Context) {
 	}
 	defer conn.Close()
 
+	client := &Client{conn: conn, send: make(chan []byte)}
+	clients[client] = true
+
+	go client.writePump()
+
+	client.readPump()
+}
+
+func (client *Client) readPump() {
+	defer func() {
+		delete(clients, client)
+		client.conn.Close()
+	}()
+
 	for {
-		messageType, message, err := conn.ReadMessage()
+		_, message, err := client.conn.ReadMessage()
 		if err != nil {
-			log.Println("Error during message reading:", err)
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+				log.Printf("error: %v", err)
+			}
 			break
 		}
-		log.Printf("Received: %s", message)
+		for otherClient := range clients {
+			if otherClient != client {
+				otherClient.send <- message
+			}
+		}
+	}
+}
 
-		if err = conn.WriteMessage(messageType, message); err != nil {
-			log.Println("Error during message writing:", err)
-			break
+func (client *Client) writePump() {
+	defer func() {
+		client.conn.Close()
+	}()
+
+	for {
+		select {
+		case message, ok := <-client.send:
+			if !ok {
+				return
+			}
+			err := client.conn.WriteMessage(websocket.TextMessage, message)
+			if err != nil {
+				return
+			}
 		}
 	}
 }

@@ -50,11 +50,3 @@ type Stat struct {
 	Name       string
 	Catégories string
 }
-
-// type Room struct {
-// 	id         string
-// 	clients    map[*websocket.Conn]bool
-// 	register   chan *websocket.Conn
-// 	unregister chan *websocket.Conn
-// 	mu         sync.RWMutex
-// }
