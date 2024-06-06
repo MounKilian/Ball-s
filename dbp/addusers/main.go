@@ -29,6 +29,7 @@ func main() {
 	userID := user.ID
 
 	fmt.Println("userID :", userID)
+	// CloneDb()
 }
 
 func Marshal(v any) string {
@@ -54,6 +55,6 @@ func CloneDb() {
 
 	if true && len(users) > 0 && len(stats) > 0 {
 		db2.Create(users)
-		db2.Create(stats)
+		// db2.Create(stats)
 	}
 }
