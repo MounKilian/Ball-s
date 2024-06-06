@@ -10,10 +10,10 @@ body {
 
 .contacts-header {
 	padding: 10px 20px;
-	background-color: #4CAF50;
+	background-color: black;
 	color: white;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	text-align: center;
+	text-align: left;
 }
 
 .contacts-container {
@@ -22,7 +22,7 @@ body {
 	flex-direction: column;
 	padding: 20px;
 	overflow-y: auto;
-	background-color: #FFFFFF;
+	background-color: white;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
