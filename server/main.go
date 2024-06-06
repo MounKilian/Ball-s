@@ -2,10 +2,14 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
+	"net/http"
 	"time"
 
 	"balls/dbp"
+
+	"github.com/gin-gonic/gin"
 )
 
 // func main() {
@@ -15,93 +19,103 @@ import (
 func main() {
 	// addUsers()
 	// addSwipe()
-	db := dbp.DB
-	users := []dbp.User{}
-	db.Find(&users, &dbp.User{})
-	usertosortfrom := rand.Intn(len(users))
-	sort(users[usertosortfrom])
-	// router := gin.Default()
+	// db := dbp.DB
+	// users := []dbp.User{}
+	// db.Find(&users, &dbp.User{})
+	// usertosortfrom := rand.Intn(len(users))
+	// sort(users[usertosortfrom])
+	router := gin.Default()
 
-	// router.LoadHTMLGlob("pages/*.html")
+	router.LoadHTMLGlob("pages/*.html")
 
-	// router.Static("/static", "./static")
+	router.Static("/static", "./static")
 
-	// router.GET("/login", func(c *gin.Context) {
-	// 	c.HTML(http.StatusOK, "login.html", nil)
-	// })
+	router.GET("/login", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "login.html", nil)
+	})
 
-	// router.GET("/", func(c *gin.Context) {
-	// 	c.HTML(http.StatusOK, "home.html", nil)
-	// })
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "home.html", nil)
+	})
 
-	// router.GET("/register", func(c *gin.Context) {
-	// 	c.HTML(http.StatusOK, "register.html", nil)
-	// })
+	router.GET("/profilUser", profileUser)
 
-	// router.POST("/register", func(c *gin.Context) {
-	// 	var user struct {
-	// 		Username string `json:"username"`
-	// 		Email    string `json:"email"`
-	// 		Password string `json:"password"`
-	// 	}
-	// 	if err := c.ShouldBindJSON(&user); err != nil {
-	// 		log.Println("Erreur de liaison des données :", err)
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
+	router.GET("/register", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "register.html", nil)
+	})
 
-	// 	log.Println("Données utilisateur reçues :", user)
+	router.GET("/message", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "message.html", nil)
+	})
 
-	// 	err := dbp.RegisterUser(user.Username, user.Email, user.Password)
-	// 	if err != nil {
-	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur lors de l'enregistrement de l'utilisateur"})
-	// 		return
-	// 	}
+	router.GET("/discussion", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "discussion.html", nil)
+	})
 
-	// 	c.JSON(http.StatusOK, gin.H{"message": "Utilisateur enregistré avec succès"})
-	// })
+	router.POST("/register", func(c *gin.Context) {
+		var user struct {
+			Username string `json:"username"`
+			Email    string `json:"email"`
+			Password string `json:"password"`
+		}
+		if err := c.ShouldBindJSON(&user); err != nil {
+			log.Println("Erreur de liaison des données :", err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
-	// router.POST("/login", func(c *gin.Context) {
-	// 	var user struct {
-	// 		Username string `json:"username"`
-	// 		Password string `json:"password"`
-	// 	}
-	// 	if err := c.ShouldBindJSON(&user); err != nil {
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
+		log.Println("Données utilisateur reçues :", user)
 
-	// 	userID, isAuthenticated, err := dbp.AuthenticateUser(user.Username, user.Password)
-	// 	if err != nil {
-	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
+		err := dbp.RegisterUser(user.Username, user.Email, user.Password)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur lors de l'enregistrement de l'utilisateur"})
+			return
+		}
 
-	// 	if !isAuthenticated {
-	// 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Nom d'utilisateur ou mot de passe incorrect"})
-	// 		return
-	// 	}
+		c.JSON(http.StatusOK, gin.H{"message": "Utilisateur enregistré avec succès"})
+	})
 
-	// 	// Création d'un cookie avec l'ID utilisateur
-	// 	cookie := &http.Cookie{
-	// 		Name:     "user_id",
-	// 		Value:    userID,
-	// 		SameSite: http.SameSiteStrictMode,
-	// 		// 	HttpOnly: true,
-	// 		MaxAge: 3600, // Durée de vie sdu cookie en secondes (1 heure ici)
-	// 	}
-	// 	http.SetCookie(c.Writer, cookie)
+	router.POST("/login", func(c *gin.Context) {
+		var user struct {
+			Username string `json:"username"`
+			Password string `json:"password"`
+		}
+		if err := c.ShouldBindJSON(&user); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 
-	// 	c.JSON(http.StatusOK, gin.H{"message": "Authentification réussie"})
-	// })
+		userID, isAuthenticated, err := dbp.AuthenticateUser(user.Username, user.Password)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 
-	// router.GET("/form", func(c *gin.Context) {
-	// 	c.HTML(http.StatusOK, "welcomePage.html", nil)
-	// })
+		if !isAuthenticated {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Nom d'utilisateur ou mot de passe incorrect"})
+			return
+		}
 
-	// if err := router.Run(":8080"); err != nil {
-	// 	log.Fatal(err)
-	// }
+		// Création d'un cookie avec l'ID utilisateur
+		cookie := &http.Cookie{
+			Name:     "user_id",
+			Value:    userID,
+			SameSite: http.SameSiteStrictMode,
+			// 	HttpOnly: true,
+			MaxAge: 3600, // Durée de vie sdu cookie en secondes (1 heure ici)
+		}
+		http.SetCookie(c.Writer, cookie)
+
+		c.JSON(http.StatusOK, gin.H{"message": "Authentification réussie"})
+	})
+
+	router.GET("/form", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "welcomePage.html", nil)
+	})
+
+	if err := router.Run(":8080"); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func addSport() {
@@ -162,7 +176,7 @@ func addUsers() {
 		user := dbp.User{
 			Username:      "User",
 			DateOfBirth:   time.Now(),
-			SportID:       sportid,
+			Sport:         fmt.Sprint(sportid),
 			Gender:        gender,
 			DesiredGender: genderpref,
 			City:          cityname,
@@ -188,7 +202,7 @@ func addSwipe() {
 		potential = nil
 		for i := 0; i < len(users); i++ {
 			if users[f].City == users[i].City && users[i].ID != users[f].ID {
-				if users[f].SportID == users[i].SportID && users[f].DesiredGender == users[i].Gender {
+				if users[f].Sport == users[i].Sport && users[f].DesiredGender == users[i].Gender {
 					potential = append(potential, users[i])
 				}
 			}
@@ -221,9 +235,10 @@ func sort(startUser dbp.User) []dbp.User {
 	fmt.Println(swipes)
 
 	var potential []dbp.User
+
 	for i := 0; i < len(users); i++ {
 		if startUser.City == users[i].City && users[i].ID != startUser.ID {
-			if startUser.SportID == users[i].SportID && startUser.DesiredGender == users[i].Gender {
+			if startUser.Sport == users[i].Sport && startUser.DesiredGender == users[i].Gender {
 				potential = append(potential, users[i])
 			}
 		}
@@ -239,4 +254,22 @@ func sort(startUser dbp.User) []dbp.User {
 		fmt.Println(potential[i].ID)
 	}
 	return potential
+}
+
+
+
+func profileUser(c *gin.Context) {
+	user := dbp.User{
+		Username:    "username",
+		Email:       "email@email.com",
+		Password:    "Password",
+		Image:       "uglyprofilpic.png",
+		Biography:   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+		Sport:       "Football",
+		DateOfBirth: time.Now(),
+		City:        "69420",
+	}
+
+	c.HTML(http.StatusOK, "profilUser.html", user)
+
 }
