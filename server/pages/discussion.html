@@ -1,16 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/discussion.css">
 </head>
 <body>
-    <div class="chat-container">
-        <!-- Les messages de chat seront ajoutés ici -->
+    <header class="contacts-header">
+        <h1>Contacts</h1>
+    </header>
+    <div class="contacts-container">
+        <!-- Exemple de contact -->
+        <a href="/discussion?contact=contact1" class="contact">
+            <img src="/static/images/profile.jpg" alt="Avatar" class="contact-avatar">
+            <div class="contact-info">
+                <span class="contact-name">Nom du Contact 1</span>
+                <span class="contact-last-message">Dernier message...</span>
+            </div>
+        </a>
+        <!-- Ajoutez plus de contacts ici -->
+        <a href="discussion.html?contact=contact2" class="contact">
+            <img src="/static/images/profile.jpg" alt="Avatar" class="contact-avatar">
+            <div class="contact-info">
+                <span class="contact-name">Nom du Contact 2</span>
+                <span class="contact-last-message">Dernier message...</span>
+            </div>
+        </a>
     </div>
-    <form id="message-form">
-        <input type="text" id="message-input" placeholder="Tapez votre message ici...">
-        <button type="submit">Envoyer</button>
-    </form>
-    <script src="script.js"></script>
 </body>
 </html>

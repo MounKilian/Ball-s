@@ -35,6 +35,14 @@ func main() {
 		c.HTML(http.StatusOK, "register.html", nil)
 	})
 
+	router.GET("/message", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "message.html", nil)
+	})
+
+	router.GET("/discussion", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "discussion.html", nil)
+	})
+
 	router.POST("/register", func(c *gin.Context) {
 		var user struct {
 			Username string `json:"username"`
