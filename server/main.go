@@ -122,17 +122,20 @@ func handleLogin(c *gin.Context) {
 			MaxAge: 3600,
 		}
 		http.SetCookie(c.Writer, cookie)
+		// Après la définition de handleLogin
 
 		c.JSON(http.StatusOK, gin.H{"message": "Authentification réussie"})
-	})
+		}
 
-	router.GET("/form", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "welcomePage.html", nil)
-	})
+		// Définir les routes en dehors de la fonction main
+		router.GET("/form", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "welcomePage.html", nil)
+		})
 
-	router.GET("/account", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "accountPage.html", nil)
-	})
+router.GET("/account", func(c *gin.Context) {
+	c.HTML(http.StatusOK, "accountPage.html", nil)
+})
+
 
 	if err := router.Run(":8080"); err != nil {
 		log.Fatal(err)
