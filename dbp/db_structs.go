@@ -51,4 +51,5 @@ type Stat struct {
 	ID         uint `gorm:"primarykey"`
 	Name       string
 	Catégories string
+	Image      string
 }

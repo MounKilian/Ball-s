@@ -17,8 +17,15 @@ import (
 // }
 
 func main() {
+	// addUsers()
+	// addSwipe()
+	// db := dbp.DB
+	// users := []dbp.User{}
+	// db.Find(&users, &dbp.User{})
+	// usertosortfrom := rand.Intn(len(users))
+	// sort(users[usertosortfrom])
 	router := gin.Default()
-	// sort()
+
 	router.LoadHTMLGlob("pages/*.html")
 
 	router.Static("/static", "./static")
@@ -28,6 +35,7 @@ func main() {
 	})
 
 	router.GET("/", func(c *gin.Context) {
+
 		c.HTML(http.StatusOK, "home.html", nil)
 	})
 
@@ -93,9 +101,11 @@ func main() {
 
 		// Création d'un cookie avec l'ID utilisateur
 		cookie := &http.Cookie{
-			Name:   "user_id",
-			Value:  userID,
-			MaxAge: 3600,
+			Name:     "user_id",
+			Value:    userID,
+			SameSite: http.SameSiteStrictMode,
+			// 	HttpOnly: true,
+			MaxAge: 3600 * 24 * 30, // Durée de vie sdu cookie en secondes (1 heure ici)
 		}
 		http.SetCookie(c.Writer, cookie)
 
@@ -134,6 +144,7 @@ func addSport() {
 }
 
 func addUsers() {
+
 	last := &dbp.User{}
 	tx := dbp.DB.Last(last)
 	if tx.RowsAffected > 0 {
@@ -192,4 +203,20 @@ func sort() {
 	for i := 0; i < len(potential); i++ {
 		fmt.Println(potential[i].ID)
 	}
+}
+
+func profileUser(c *gin.Context) {
+	user := dbp.User{
+		Username:    "username",
+		Email:       "email@email.com",
+		Password:    "Password",
+		Image:       "uglyprofilpic.png",
+		Biography:   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+		Sport:       "Football",
+		DateOfBirth: time.Now(),
+		City:        "69420",
+	}
+
+	c.HTML(http.StatusOK, "profilUser.html", user)
+
 }

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BALL'S</title>
     <link rel="stylesheet" href="../static/css/profileUser.css">
 </head>
+
 <body>
     <div class="header">
         <h1>BALL'S</h1>
@@ -17,10 +19,10 @@
 
         <img class="profilePicture" src="" alt="your profile picture">
         <img class="ball" src="../static/image/ball.svg" alt="sportPicture">
-           
+
         <div class="rightcore">
-            <p class="Username"></p>     
-            <p class="biography"></p>            
+            <p class="Username"></p>
+            <p class="biography"></p>
         </div>
     </div>
     <div class="down">
@@ -62,8 +64,8 @@
             let profilePicture = document.querySelector(".profilePicture")
             profilePicture.src = data.Image
             let Location = document.querySelector(".Location")
-            if (data.City!= undefined) {
-                Location.textContent = "Location: " + data.City 
+            if (data.City != undefined) {
+                Location.textContent = "Location: " + data.City
             } else {
                 Location.textContent = "Location: "
             }
@@ -76,4 +78,5 @@
         });
     </script>
 </body>
+
 </html>
