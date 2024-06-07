@@ -118,8 +118,17 @@ func StrikeOrMiss(c *gin.Context) {
 	}
 
 	strike := dbp.Strike{}
-	db.First(&strike, &dbp.Strike{UserAID: otherUserId, UserBID: userId})
+	tx := db.First(&strike, &dbp.Strike{UserAID: otherUserId, UserBID: userId})
 
+	if tx.RowsAffected > 0 {
+		roomName := fmt.Sprint(userId) + selectRandomLetter() + fmt.Sprint(otherUserId)
+		match := dbp.Match{UserAID: userId, UserBID: otherUserId, RoomName: roomName}
+		match2 := dbp.Match{UserAID: otherUserId, UserBID: userId, RoomName: roomName}
+		db.Create(&match)
+		db.Create(&match2)
+		c.JSON(http.StatusOK, gin.H{"message": "it's a match"})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "User information updated successfully"})
 }
 
