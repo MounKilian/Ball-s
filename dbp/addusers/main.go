@@ -23,9 +23,9 @@ func main() {
 	// 	fmt.Println("ID :", i)
 	// }
 
-	// CloneDb("testold", "test")
-	AddUsers()
-	AddImages()
+	CloneDb("balls", "test")
+	// AddUsers()
+	// AddImages()
 	// addMatches()
 }
 
@@ -84,12 +84,12 @@ func CloneDb(dbName1, dbName2 string) {
 	// fmt.Println(Marshal(users[0]), Marshal(stats[0]))
 	db2, err := gorm.Open(sqlite.Open(dbName2+".db"), &gorm.Config{})
 	if err != nil {
-		// panic("failed to connect database")
+		panic("failed to connect database")
 	}
 
 	if len(users) > 0 && len(stats) > 0 {
-		db2.Create(stats)
-		db2.Create(users)
+		db2.Save(stats)
+		// db2.Create(users)
 	}
 }
 

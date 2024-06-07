@@ -353,6 +353,16 @@ func sort(startUser dbp.User) []dbp.User {
 		}
 	}
 
+	for i := 0; i < 21; i++ {
+		var usernumber int64
+		listuser := []dbp.User{}
+		db.Model(&dbp.User{}).Where("gender = ?", startUser.DesiredGender).Where("city = ?", startUser.City).Not("id = ?", startUser.ID).Not("sport = ?", startUser.Sport).Not(misses).Not(strikes).Count(&usernumber)
+		db.Model(&dbp.User{}).Where("gender = ?", startUser.DesiredGender).Where("city = ?", startUser.City).Not("id = ?", startUser.ID).Not(misses).Not(strikes).Find(&listuser)
+		// db.Model(&dbp.User{}).Where("gender = ?", startUser.DesiredGender).Where("city = ?", startUser.City).Not("id = ?", startUser.ID).Find(users)
+		usertoadd := rand.Int63n(usernumber)
+		potential = append(potential, users[usertoadd])
+	}
+
 	rand.Shuffle(len(potential), func(i, j int) { potential[i], potential[j] = potential[j], potential[i] })
 	// result, _ := json.Marshal(&users)
 	// resultpot, _ := json.Marshal((&potential))
