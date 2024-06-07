@@ -208,15 +208,17 @@ func addMatches() {
 		if existingMatches[[2]int{userA, userB}] || existingMatches[[2]int{userB, userA}] {
 			continue
 		}
-
+		roomName := fmt.Sprint(userA) + "-" + fmt.Sprint(userB)
 		match1 := dbp.Match{
-			UserAID: userA,
-			UserBID: userB,
+			UserAID:  userA,
+			UserBID:  userB,
+			RoomName: roomName,
 		}
 
 		match2 := dbp.Match{
-			UserAID: userB,
-			UserBID: userA,
+			UserAID:  userB,
+			UserBID:  userA,
+			RoomName: roomName,
 		}
 
 		if err := db.Create(&match1).Error; err != nil {
