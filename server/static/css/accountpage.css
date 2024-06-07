@@ -169,3 +169,17 @@ fieldset input[type="checkbox"] {
     border-radius: 4px;
     box-sizing: border-box;
 }
+
+/* Back Arrow Styles */
+.banner a {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.banner .backarrow {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}

@@ -21,6 +21,7 @@
         <a id="miss" class="button"></a>
         <div id="bgcard" class="card"></div>
         <a class="card">
+            <div id="name"></div>
             <div id="ball" class="button" title="football"></div>
         </a>
         <a id="strike" class="button"></a>
@@ -34,11 +35,16 @@
         let card = document.querySelector("a.card")
         let ball = document.querySelector("#ball")
         let profile = document.querySelector("#profile")
+        let username = document.querySelector("#name")
         let sports = []
 
         window.getCookie = function (name) {
             var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
             if (match) return match[2];
+        }
+
+        if (getCookie("user_id") == 0 || getCookie("user_id") ==  undefined){
+            window.location.href = "/login"
         }
 
         let potentials = []
@@ -55,6 +61,7 @@
             .then(data => {
                 // console.log(data)
                 profile.href = "/profilUser?id=" + data.ID
+                username.textContent = data.Username
                 profile.style.backgroundImage = `url(${data.Image ? data.Image : "/static/images/avatar.png"})`
             })
 
@@ -75,6 +82,7 @@
             bg.src = first
             card.style.backgroundImage = `url(${first})`
             nextcard.style.backgroundImage = `url(${second})`
+            username.textContent = currentuser.Username
             sports.has(currentuser.Sport) ? ball.style.backgroundImage = `url(${sports.get(currentuser.Sport)})` : ball.textContent = currentuser.Sport
             // potentials_position = (potentials_position + 1) % potentials.length
             potentials_position++
