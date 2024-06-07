@@ -18,13 +18,16 @@
         <a href="/discussion" class="button" id="msg"></a>
     </div>
     <div id="cardrow">
-        <a id="miss" class="button"></a>
+        <div id="miss" class="button"></div>
+        <div id="theEnd">
+            <button></button>
+        </div>
         <div id="bgcard" class="card"></div>
-        <a class="card">
+        <div id="card" class="card">
             <div id="name"></div>
-            <div id="ball" class="button" title="football"></div>
-        </a>
-        <a id="strike" class="button"></a>
+            <div id="ball" class="button"></div>
+        </div>
+        <div id="strike" class="button"></div>
     </div>
 
 
@@ -32,7 +35,7 @@
     <script>
         let bg = document.querySelector("#bg-image>img")
         let nextcard = document.querySelector("#bgcard")
-        let card = document.querySelector("a.card")
+        let card = document.querySelector("#card")
         let ball = document.querySelector("#ball")
         let profile = document.querySelector("#profile")
         let username = document.querySelector("#name")
@@ -43,7 +46,7 @@
             if (match) return match[2];
         }
 
-        if (getCookie("user_id") == 0 || getCookie("user_id") ==  undefined){
+        if (getCookie("user_id") == 0 || getCookie("user_id") == undefined) {
             window.location.href = "/login"
         }
 
@@ -53,7 +56,8 @@
             .then(response => response.json())
             .then(data => {
                 sports = new Map(data.map(c => [c.Name, c.Image]))
-                console.log(sports)
+                // console.log(sports)
+                ball.removeAttribute("style")
             })
 
         fetch("http://localhost:8081/user?id=" + encodeURIComponent(getCookie("user_id")))
@@ -69,19 +73,27 @@
         fetch("http://localhost:8081/sort?id=" + encodeURIComponent(getCookie("user_id")))
             .then(response => response.json())
             .then(data => {
-                console.log(data)
+                // console.log(data)
                 potentials = data.message
+                if (!potentials) {
+
+                    return
+                }
                 next()
             })
 
         function next() {
             ismoving = false
+            if (!potentials) {
+                return
+            }
             let currentuser = potentials[potentials_position]
             let first = currentuser.Image ? currentuser.Image : "/static/images/avatar.png"
             let second = potentials.length >= (potentials_position + 2) && potentials[potentials_position + 1].Image ? potentials[potentials_position + 1].Image : "/static/images/avatar.png"
             bg.src = first
             card.style.backgroundImage = `url(${first})`
             nextcard.style.backgroundImage = `url(${second})`
+            ball.title = currentuser.Sport
             username.textContent = currentuser.Username
             sports.has(currentuser.Sport) ? ball.style.backgroundImage = `url(${sports.get(currentuser.Sport)})` : ball.textContent = currentuser.Sport
             // potentials_position = (potentials_position + 1) % potentials.length
