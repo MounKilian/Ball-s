@@ -55,6 +55,7 @@ func main() {
 	router.POST("/accountForm", AccountForm)
 	router.POST("/strikeOrMiss", StrikeOrMiss)
 	router.GET("/matchs", getAllMatches)
+	router.GET("/delete", deleteUser)
 
 	router.GET("/ws", handleWebSocket)
 	router.GET("/sort", func(c *gin.Context) {
@@ -73,6 +74,21 @@ func main() {
 		db.First(&user, id)
 		sortedUsers := sort(user)
 		c.JSON(http.StatusFound, gin.H{"message": sortedUsers})
+	})
+	router.GET("/reset", func(c *gin.Context) {
+		db := dbp.DB
+		s, ok := c.GetQuery("id")
+		if !ok {
+			fmt.Fprintln(c.Writer, "Id not provided in get request")
+			return
+		}
+		id, err := strconv.Atoi(s)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Error converting id to int: %v", err)})
+			return
+		}
+		RowsAffected := db.Delete(&dbp.Miss{}, &dbp.Miss{UserAID: int(id)}).RowsAffected
+		c.JSON(http.StatusFound, gin.H{"message": "Number of deleted misses :" + fmt.Sprint(RowsAffected)})
 	})
 
 	config := cors.DefaultConfig()
@@ -102,6 +118,18 @@ func StrikeOrMiss(c *gin.Context) {
 		db.Create(&strike)
 	}
 
+	strike := dbp.Strike{}
+	tx := db.First(&strike, &dbp.Strike{UserAID: otherUserId, UserBID: userId})
+
+	if tx.RowsAffected > 0 {
+		roomName := fmt.Sprint(userId) + selectRandomLetter() + fmt.Sprint(otherUserId)
+		match := dbp.Match{UserAID: userId, UserBID: otherUserId, RoomName: roomName}
+		match2 := dbp.Match{UserAID: otherUserId, UserBID: userId, RoomName: roomName}
+		db.Create(&match)
+		db.Create(&match2)
+		c.JSON(http.StatusOK, gin.H{"message": "it's a match"})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "User information updated successfully"})
 }
 
@@ -179,6 +207,23 @@ func getUserByID(c *gin.Context) {
 	}
 }
 
+func deleteUser(c *gin.Context) {
+	db := dbp.DB
+	id, err := c.GetQuery("id")
+	if !err {
+		fmt.Fprintln(c.Writer, "Id not provided in get request")
+		return
+	}
+	user := dbp.User{}
+	db.First(&user, id)
+	if user.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+	db.Delete(&user)
+	c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
+}
+
 func getAllUsers(c *gin.Context) {
 	db := dbp.DB
 	users := []dbp.User{}
@@ -250,11 +295,28 @@ func UploadImg(c *gin.Context) {
 func WelcomeForm(c *gin.Context) {
 	db := dbp.DB
 
-	birthday := c.PostForm("birthday")
+	userId, _ := strconv.Atoi(c.Query("id"))
+	log.Println(userId)
+
+	user := &dbp.User{}
+	tx := db.First(user, userId)
+	if tx.RowsAffected > 0 {
+		c.JSON(http.StatusOK, gin.H{"data": user})
+	} else {
+		fmt.Fprintln(c.Writer, "User not found")
+	}
+
+	birthday, _ := time.Parse("2006-01-02", c.PostForm("birthday"))
+	// birthday := c.PostForm("birthday")
 	genre := c.PostForm("genre")
+	var desired_gender string
+	if genre == "Femme" {
+		desired_gender = "Homme"
+	} else {
+		desired_gender = "Femme"
+	}
 	sport := c.PostForm("sport")
 	profilePicture := c.PostForm("image")
-	userId := c.Query("id")
 
 	var selectedSports []string
 	if sports, exists := c.Request.PostForm["sports"]; exists {
@@ -271,10 +333,11 @@ func WelcomeForm(c *gin.Context) {
 		}
 	}
 
-	_ = db.Exec("UPDATE users SET gender = ?, secondary_sport = ? date_of_birth = ?, sport = ?, image = ? WHERE id = ?", genre, sportsList, birthday, sport, profilePicture, userId)
+	result := db.Model(&user).Updates(dbp.User{DesiredGender: desired_gender, SecondarySport: sportsList, Sport: sport, Image: profilePicture, DateOfBirth: birthday, Gender: genre})
 
-	c.JSON(http.StatusOK, gin.H{"message": "User information updated successfully"})
-	log.Printf("User information updated successfully: %s", userId)
+	log.Println(result.RowsAffected)
+	log.Printf("User information updated successfully: %d", userId)
+	// log.Printf("User information updated successfully: %s", userId)
 }
 
 func AccountForm(c *gin.Context) {

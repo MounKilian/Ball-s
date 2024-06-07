@@ -13,7 +13,7 @@
         <h1>BALL'S</h1>
     </div>
     <div class="banner">
-        <a href="/"><img class="backarrow" src="../static/image/wholecirclearrowgigacombowowamazingreallycool.png" alt="backarrow"></a>
+        <a id="hrefid"><img class="backarrow" src="../static/image/wholecirclearrowgigacombowowamazingreallycool.png" alt="backarrow"></a>
     </div>
     <div class="core">
 
@@ -29,21 +29,12 @@
         <div class="writing">
             <p class="Location"></p>
             <p class="OtherSports">Other sport : no other sport</p>
-            <a href="/account" class="modifie"><button class="button">Modify</button></a>
-            <a class="Logout"><button class="buttonLogout">Logout</button></a>
-            <a class="Delete"><button class="buttonDelete">Delete</button></a>
         </div>
-        <!-- <a href="/modifie" class="modifie"><button class="button">modify</button></a> -->
     </div>
     <script>
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
-
-        let id = getCookie("user_id")
-        console.log(id)
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id')
+        document.getElementById("hrefid").href = "/"
 
         fetch('http://localhost:8081/user?id=' + encodeURIComponent(id), {
             mode: 'cors',
@@ -77,39 +68,6 @@
             console.error(error);
             let username = document.querySelector(".Username")
             username.textContent = "User not found"
-        });
-
-        let logout = document.querySelector(".Logout");
-        let Delete = document.querySelector(".Delete");
-        logout.addEventListener("click", function(event) {
-            let expires = "";
-            if (2) {
-                let date = new Date();
-                date.setTime(date.getTime() + (2 * 24 * 60 * 60 * 1000));
-                expires = "; expires=" + date.toUTCString();
-            }
-            document.cookie = "user_id" + "=" + (0 || "") + expires + "; path=/";
-            window.location.href = "/login";
-        });
-
-        Delete.addEventListener("click", function(event) {
-            let expires = "";
-            if (2) {
-                let date = new Date();
-                date.setTime(date.getTime() + (2 * 24 * 60 * 60 * 1000));
-                expires = "; expires=" + date.toUTCString();
-            }
-            document.cookie = "user_id" + "=" + (0 || "") + expires + "; path=/";
-            window.location.href = "/login";
-            fetch('http://localhost:8081/delete?id=' + encodeURIComponent(id), {
-                mode: 'cors',
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            }).then(response => response.json()).then(data => {
-                console.log(data)
-            })
         });
     </script>
 </body>

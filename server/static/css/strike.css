@@ -8,10 +8,6 @@ html {
     margin: 0;
 }
 
-.card {
-    position: relative;
-}
-
 #card-content {
     position: absolute;
     bottom: 10px;
@@ -22,13 +18,13 @@ html {
 
 #name {
     font-size: 24px;
-    font-weight: bold; 
-    color: #ffffff; 
-    padding: 10px 10px; 
-    background-color: rgba(0, 0, 0, 0.5); 
-    border-radius: 8px; 
+    font-weight: bold;
+    color: #ffffff;
+    padding: 10px 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
     margin-right: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     text-align: center;
     margin-left: 10px;
 }
@@ -78,6 +74,33 @@ body {
 
 #bgcard {
     position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#theEnd {
+    display: none;
+    position: absolute;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 75%;
+    height: 100%;
+    gap: 2%;
+}
+
+#theEnd button {
+    padding: 10px 20px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 28px;
+    /* margin-bottom: 10px; */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
 }
 
 .card {
@@ -90,6 +113,7 @@ body {
 }
 
 #ball {
+    display: none;
     aspect-ratio: 1;
     position: absolute;
     width: 20%;

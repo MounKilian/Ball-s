@@ -39,6 +39,8 @@ If you don't have the message for open it you can write this in your browser:
   http://localhost:8080/
 ```
 
+3. You need the extension Allow CORS: Access-Control-Allow-Origin
+
 # How Play ? 🔨
 
 You arrive on the login page if you are not already connected.
@@ -56,5 +58,5 @@ golang 1.21.0
 
  - [Kilian Moun 🍻](https://github.com/MounKilian)
  - [Omar Yassine 🍻]
- - [Anthony Pereira 🍻]
- - [ 🍻]
+ - [Anthony Pereira 🍻](https://github.com/anthonyP1202)
+ - [Elhadj Mamadou Cire DIALLO 🍻](https://github.com/delhadjm)
