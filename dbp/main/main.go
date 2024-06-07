@@ -53,6 +53,7 @@ func main() {
 	router.POST("/uploadImg", UploadImg)
 	router.POST("/welcomeForm", WelcomeForm)
 	router.POST("/accountForm", AccountForm)
+	router.POST("/strikeOrMiss", StrikeOrMiss)
 	router.GET("/matchs", getAllMatches)
 
 	router.GET("/ws", handleWebSocket)
@@ -85,6 +86,23 @@ func main() {
 	router.Use(cors.New(config))
 
 	log.Fatal(router.Run(":8081"))
+}
+
+func StrikeOrMiss(c *gin.Context) {
+	db := dbp.DB
+	userId, _ := strconv.Atoi(c.PostForm("id"))
+	otherUserId, _ := strconv.Atoi(c.PostForm("otherUserId"))
+	decision := c.PostForm("decision")
+
+	if decision == "strike" {
+		miss := dbp.Miss{UserAID: userId, UserBID: otherUserId}
+		db.Create(&miss)
+	} else if decision == "miss" {
+		strike := dbp.Strike{UserAID: userId, UserBID: otherUserId}
+		db.Create(&strike)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "User information updated successfully"})
 }
 
 func handleWebSocket(c *gin.Context) {

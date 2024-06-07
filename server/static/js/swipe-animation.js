@@ -13,12 +13,13 @@ const move_right = () => {
         return;
     }
     ismoving = true;
+
     ball.style.display = "none";
     card.style.backgroundColor = "green";
     card.animate(
         { backgroundPosition: '-100vw', transform: "translate3d(80%, 0, 0)" },
         animationOptions
-    ).addEventListener("finish", animEnd)
+    ).addEventListener("finish", () => animEnd(true))
 }
 
 const move_left = () => {
@@ -31,7 +32,7 @@ const move_left = () => {
     card.animate(
         { backgroundPosition: '100vw', transform: "translate3d(-80%, 0, 0)" },
         animationOptions
-    ).addEventListener("finish", animEnd)
+    ).addEventListener("finish", () => animEnd(false))
 }
 
 strike.addEventListener("click", move_right)

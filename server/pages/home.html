@@ -76,10 +76,26 @@
             card.style.backgroundImage = `url(${first})`
             nextcard.style.backgroundImage = `url(${second})`
             sports.has(currentuser.Sport) ? ball.style.backgroundImage = `url(${sports.get(currentuser.Sport)})` : ball.textContent = currentuser.Sport
-            potentials_position = (potentials_position + 1) % potentials.length
+            // potentials_position = (potentials_position + 1) % potentials.length
+            potentials_position++
         }
 
-        function animEnd() {
+        function animEnd(strike) {
+            const formData = new FormData();
+            formData.append("id", getCookie("user_id"));
+            formData.append("otherUserId", potentials[potentials_position - 1].ID);
+            formData.append("decision", strike ? "strike" : "miss");
+
+            fetch("http://localhost:8081/strikeOrMiss", {
+                method: "POST",
+                body: formData,
+            }).then(response => response.json()
+            ).then(data => {
+                console.log(data)
+            }).catch(err => {
+                console.error(err)
+            })
+
             ball.removeAttribute("style")
             next()
         }

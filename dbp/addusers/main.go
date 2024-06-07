@@ -23,8 +23,22 @@ func main() {
 	// 	fmt.Println("ID :", i)
 	// }
 
-	// CloneDb("test")
-	// AddUsers()
+	// CloneDb("balls", "test")
+	AddUsers()
+	// AddImages()
+	// addMatches()
+}
+
+func Marshal(v any) string {
+	re, err := json.Marshal(v)
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+	return string(re)
+}
+
+func AddImages() {
 	images := []string{
 		"/static/img/_08095b50-f04c-4ff5-9750-26debab1ba96.jpg",
 		"/static/img/_a63562ee-b105-4eb8-bb4f-1b877f274e36.jpg",
@@ -43,7 +57,7 @@ func main() {
 	_ = images
 	db := dbp.DB
 	users := []dbp.User{}
-	db.Not(5, 6).Find(&users) //, map[string]any{"image": ""})
+	db.Not(4, 5).Find(&users) //, map[string]any{"image": ""})
 	fmt.Println("len :", len(users))
 	for _, u := range users {
 		if u.ID == 6 {
@@ -55,26 +69,19 @@ func main() {
 		u.Image = image
 		db.Save(&u)
 	}
-	// addMatches()
 }
 
-func Marshal(v any) string {
-	re, err := json.Marshal(v)
+func CloneDb(dbName1, dbName2 string) {
+	db1, err := gorm.Open(sqlite.Open(dbName1+".db"), &gorm.Config{})
 	if err != nil {
-		log.Println(err)
-		return ""
+		panic("failed to connect database")
 	}
-	return string(re)
-}
-
-func CloneDb(dbName string) {
-	db1 := dbp.DB
 	users := []dbp.User{}
 	db1.Find(&users)
 	stats := []dbp.Stat{}
 	db1.Find(&stats)
 	fmt.Println(Marshal(users[0]), Marshal(stats[0]))
-	db2, err := gorm.Open(sqlite.Open(dbName+".db"), &gorm.Config{})
+	db2, err := gorm.Open(sqlite.Open(dbName2+".db"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -118,33 +125,32 @@ func AddUsers() {
 		var gender string
 		var genderpref string
 		if cityrand == 0 {
-			cityname = "paris"
+			cityname = "Paris"
 		} else {
 			cityname = "Lyon"
 		}
 
 		if genderand == 0 {
-			gender = "men"
+			gender = "Homme"
 		} else {
-			gender = "women"
+			gender = "Femme"
 		}
 
 		if genderprefrand == 0 {
-			genderpref = "men"
+			genderpref = "Homme"
 		} else {
-			genderpref = "women"
+			genderpref = "Femme"
 		}
 		user := dbp.User{
-			Username:      "User",
+			Username:      "User" + fmt.Sprint(i),
+			Email:         "user" + fmt.Sprint(i) + "@test.com",
 			DateOfBirth:   time.Now().Add(time.Duration(rand.Intn(10000)) * time.Hour * 24 * -1),
 			Sport:         sport.Name,
 			Gender:        gender,
 			DesiredGender: genderpref,
 			City:          cityname,
 		}
-
 		db.Create(&user)
-
 	}
 }
 
