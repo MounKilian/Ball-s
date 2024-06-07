@@ -265,7 +265,7 @@ func WelcomeForm(c *gin.Context) {
 
 	sportsList := ""
 	if len(selectedSports) > 0 {
-		sportsList = fmt.Sprintf("%s", selectedSports[0])
+		sportsList = selectedSports[0]
 		for i := 1; i < len(selectedSports); i++ {
 			sportsList += fmt.Sprintf(",%s", selectedSports[i])
 		}
@@ -327,7 +327,7 @@ func AccountForm(c *gin.Context) {
 	// result := db.Exec("UPDATE users SET secondary_sport = ?, username = ?, email = ?, biography = ?, sport_id = ?, image = ?, city = ? WHERE id = ?", sportsList, username, email, biography, sport, profilePicture, city, userId)
 	result := db.Model(&user).Updates(dbp.User{SecondarySport: sportsList, Username: username, Email: email, Biography: biography, Sport: sport, Image: profilePicture, City: city})
 	log.Println(result.RowsAffected)
-	log.Printf("User information updated successfully: %s", userId)
+	log.Printf("User information updated successfully: %d", userId)
 	// c.JSON(http.StatusOK, gin.H{"data": "User information updated successfully"})
 }
 
