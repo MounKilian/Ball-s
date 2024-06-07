@@ -20,7 +20,8 @@
     <div id="cardrow">
         <div id="miss" class="button"></div>
         <div id="theEnd">
-            <button></button>
+            <button>Reset</button>
+            <button>Refresh</button>
         </div>
         <div id="bgcard" class="card"></div>
         <div id="card" class="card">
@@ -57,7 +58,7 @@
             .then(data => {
                 sports = new Map(data.map(c => [c.Name, c.Image]))
                 // console.log(sports)
-                ball.removeAttribute("style")
+                ball.style.display = "initial"
             })
 
         fetch("http://localhost:8081/user?id=" + encodeURIComponent(getCookie("user_id")))
@@ -116,7 +117,7 @@
                 console.error(err)
             })
 
-            ball.removeAttribute("style")
+            ball.style.display = "initial"
             next()
         }
     </script>

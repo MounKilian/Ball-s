@@ -14,7 +14,7 @@ const move_right = () => {
     }
     ismoving = true;
 
-    ball.style.display = "none";
+    ball.style.removeProperty("display")
     card.style.backgroundColor = "green";
     card.animate(
         { backgroundPosition: '-100vw', transform: "translate3d(80%, 0, 0)" },
@@ -27,7 +27,7 @@ const move_left = () => {
         return;
     }
     ismoving = true;
-    ball.style.display = "none";
+    ball.style.removeProperty("display")
     card.style.backgroundColor = "red";
     card.animate(
         { backgroundPosition: '100vw', transform: "translate3d(-80%, 0, 0)" },
