@@ -23,9 +23,9 @@ func main() {
 	// 	fmt.Println("ID :", i)
 	// }
 
-	// CloneDb("balls", "test")
+	// CloneDb("testold", "test")
 	AddUsers()
-	// AddImages()
+	AddImages()
 	// addMatches()
 }
 
@@ -57,10 +57,10 @@ func AddImages() {
 	_ = images
 	db := dbp.DB
 	users := []dbp.User{}
-	db.Not(4, 5).Find(&users) //, map[string]any{"image": ""})
+	db.Not(4, 5).Find(&users, map[string]any{"image": ""})
 	fmt.Println("len :", len(users))
 	for _, u := range users {
-		if u.ID == 6 {
+		if u.ID == 4 || u.ID == 5 {
 			fmt.Println("error: killian found")
 			fmt.Println(u)
 		}
@@ -78,17 +78,18 @@ func CloneDb(dbName1, dbName2 string) {
 	}
 	users := []dbp.User{}
 	db1.Find(&users)
+	fmt.Println("len :", len(users))
 	stats := []dbp.Stat{}
 	db1.Find(&stats)
-	fmt.Println(Marshal(users[0]), Marshal(stats[0]))
+	// fmt.Println(Marshal(users[0]), Marshal(stats[0]))
 	db2, err := gorm.Open(sqlite.Open(dbName2+".db"), &gorm.Config{})
 	if err != nil {
-		panic("failed to connect database")
+		// panic("failed to connect database")
 	}
 
-	if true && len(users) > 0 && len(stats) > 0 {
+	if len(users) > 0 && len(stats) > 0 {
+		db2.Create(stats)
 		db2.Create(users)
-		// db2.Create(stats)
 	}
 }
 
@@ -109,7 +110,7 @@ func AddUsers() {
 		last.ID = 0
 	}
 
-	for i := last.ID; i < 3000; i++ {
+	for i := last.ID; i < 1500; i++ {
 		db := dbp.DB
 
 		max := int64(0)

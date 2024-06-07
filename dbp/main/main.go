@@ -94,10 +94,10 @@ func StrikeOrMiss(c *gin.Context) {
 	otherUserId, _ := strconv.Atoi(c.PostForm("otherUserId"))
 	decision := c.PostForm("decision")
 
-	if decision == "strike" {
+	if decision == "miss" {
 		miss := dbp.Miss{UserAID: userId, UserBID: otherUserId}
 		db.Create(&miss)
-	} else if decision == "miss" {
+	} else if decision == "strike" {
 		strike := dbp.Strike{UserAID: userId, UserBID: otherUserId}
 		db.Create(&strike)
 	}
@@ -334,12 +334,14 @@ func AccountForm(c *gin.Context) {
 func sort(startUser dbp.User) []dbp.User {
 	db := dbp.DB
 	users := []dbp.User{}
-	swipes := []int{}
-	db.Model(&dbp.Miss{}).Where(&dbp.Miss{UserAID: int(startUser.ID)}).Pluck("user_b_id", &swipes)
+	misses := []int{}
+	strikes := []int{}
+	db.Model(&dbp.Miss{}).Where(&dbp.Miss{UserAID: int(startUser.ID)}).Pluck("user_b_id", &misses)
+	db.Model(&dbp.Strike{}).Where(&dbp.Strike{UserAID: int(startUser.ID)}).Pluck("user_b_id", &strikes)
 
-	db.Select("id", "username", "biography", "gender", "sport", "secondary_sport", "image", "city", "date_of_birth").Not(swipes).Find(&users)
+	db.Select("id", "username", "biography", "gender", "sport", "secondary_sport", "image", "city", "date_of_birth").Not(misses).Not(strikes).Find(&users)
 
-	fmt.Println(swipes)
+	fmt.Println(misses)
 
 	var potential []dbp.User
 
