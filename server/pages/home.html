@@ -19,11 +19,14 @@
     </div>
     <div id="cardrow">
         <div id="miss" class="button"></div>
-        <div id="theEnd">
-            <button>Reset</button>
-            <button>Refresh</button>
+
+        <div id="bgcard" class="card">
+            <div id="theEnd">
+                <p>Plus d'utilisateurs trouvés, rafraichis la page ou réinitialise tes "Miss"es</p>
+                <button id="reset">Reset Misses</button>
+                <button onclick="location.href = '/'">Refresh</button>
+            </div>
         </div>
-        <div id="bgcard" class="card"></div>
         <div id="card" class="card">
             <div id="name"></div>
             <div id="ball" class="button"></div>
@@ -40,7 +43,30 @@
         let ball = document.querySelector("#ball")
         let profile = document.querySelector("#profile")
         let username = document.querySelector("#name")
+        let reset = document.querySelector("#reset")
         let sports = []
+
+        function toggleButtons() {
+            if (!document.querySelector("#theEnd").style.zIndex.length) {
+                document.querySelector("#theEnd").style.zIndex = 1
+                document.querySelector("#theEnd").style.display = "flex"
+            } else {
+                document.querySelector("#theEnd").style.removeProperty("z-index")
+                document.querySelector("#theEnd").style.removeProperty("display")
+            }
+        }
+
+        reset.addEventListener("click", () => {
+            fetch("http://localhost:8081/reset?id=" + encodeURIComponent(getCookie("user_id")))
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    potentials_position = 0
+                    potentials = data.message
+                    toggleButtons()
+                    getsort()
+                })
+        })
 
         window.getCookie = function (name) {
             var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
@@ -61,15 +87,17 @@
                 ball.style.display = "initial"
             })
 
-        fetch("http://localhost:8081/user?id=" + encodeURIComponent(getCookie("user_id")))
-            .then(response => response.json())
-            .then(data => {
-                // console.log(data)
-                profile.href = "/profilUser?id=" + data.ID
-                username.textContent = data.Username
-                profile.style.backgroundImage = `url(${data.Image ? data.Image : "/static/images/avatar.png"})`
-            })
-
+        const getsort = () => {
+            fetch("http://localhost:8081/user?id=" + encodeURIComponent(getCookie("user_id")))
+                .then(response => response.json())
+                .then(data => {
+                    // console.log(data)
+                    profile.href = "/profilUser?id=" + data.ID
+                    username.textContent = data.Username
+                    profile.style.backgroundImage = `url(${data.Image ? data.Image : "/static/images/avatar.png"})`
+                })
+        }
+        getsort()
         // Récupérer les potentiels matchs
         fetch("http://localhost:8081/sort?id=" + encodeURIComponent(getCookie("user_id")))
             .then(response => response.json())
@@ -77,7 +105,7 @@
                 // console.log(data)
                 potentials = data.message
                 if (!potentials) {
-
+                    toggleButtons()
                     return
                 }
                 next()
@@ -85,19 +113,21 @@
 
         function next() {
             ismoving = false
-            if (!potentials) {
+            let currentuser, first, second
+            if (potentials_position >= potentials.length) {
+                toggleButtons()
+                card.style.removeProperty("background-image")
                 return
             }
-            let currentuser = potentials[potentials_position]
-            let first = currentuser.Image ? currentuser.Image : "/static/images/avatar.png"
-            let second = potentials.length >= (potentials_position + 2) && potentials[potentials_position + 1].Image ? potentials[potentials_position + 1].Image : "/static/images/avatar.png"
+            currentuser = potentials[potentials_position]
+            first = currentuser.Image ? currentuser.Image : "/static/images/avatar.png"
+            second = potentials.length >= (potentials_position + 2) && potentials[potentials_position + 1].Image ? potentials[potentials_position + 1].Image : "/static/images/avatar.png"
             bg.src = first
             card.style.backgroundImage = `url(${first})`
             nextcard.style.backgroundImage = `url(${second})`
             ball.title = currentuser.Sport
             username.textContent = currentuser.Username
             sports.has(currentuser.Sport) ? ball.style.backgroundImage = `url(${sports.get(currentuser.Sport)})` : ball.textContent = currentuser.Sport
-            // potentials_position = (potentials_position + 1) % potentials.length
             potentials_position++
         }
 
@@ -113,6 +143,12 @@
             }).then(response => response.json()
             ).then(data => {
                 console.log(data)
+                if (data.message == "match") {
+                    alert("It's a match!").then(() => {
+                        window.location.href = "/discussion?id=" + potentials[potentials_position - 1].ID
+                    })
+                    // window.location.href = "/discussion?id=" + potentials[potentials_position - 1].ID
+                }
             }).catch(err => {
                 console.error(err)
             })

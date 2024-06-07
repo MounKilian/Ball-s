@@ -74,6 +74,21 @@ func main() {
 		sortedUsers := sort(user)
 		c.JSON(http.StatusFound, gin.H{"message": sortedUsers})
 	})
+	router.GET("/reset", func(c *gin.Context) {
+		db := dbp.DB
+		s, ok := c.GetQuery("id")
+		if !ok {
+			fmt.Fprintln(c.Writer, "Id not provided in get request")
+			return
+		}
+		id, err := strconv.Atoi(s)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Error converting id to int: %v", err)})
+			return
+		}
+		RowsAffected := db.Delete(&dbp.Miss{}, &dbp.Miss{UserAID: int(id)}).RowsAffected
+		c.JSON(http.StatusFound, gin.H{"message": "Number of deleted misses :" + fmt.Sprint(RowsAffected)})
+	})
 
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
@@ -101,6 +116,9 @@ func StrikeOrMiss(c *gin.Context) {
 		strike := dbp.Strike{UserAID: userId, UserBID: otherUserId}
 		db.Create(&strike)
 	}
+
+	strike := dbp.Strike{}
+	db.First(&strike, &dbp.Strike{UserAID: otherUserId, UserBID: userId})
 
 	c.JSON(http.StatusOK, gin.H{"message": "User information updated successfully"})
 }
