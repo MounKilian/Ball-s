@@ -156,6 +156,12 @@
             ball.style.display = "initial"
             next()
         }
+
+        card.addEventListener("click", function (event) {
+            event.preventDefault();
+            window.open("/profilOther?id=" + potentials[potentials_position - 1].ID, "profil")
+        })
+
     </script>
     <script src="/static/js/handle-touch.js"></script>
 </body>
