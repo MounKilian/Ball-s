@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription</title>
+    <link rel="stylesheet" href="../static/css/welcomepage.css">
+</head>
+<body>
+    <div class="header">
+        <h1>BALL'S</h1>
+    </div>
+    <div class="formWelcome">
+        <p>Welcome</p>
+
+        <form method="POST" id="main-form">
+
+        <input type="date" class="birthday" name="birthday" required>
+
+        <div class="radio">
+            <label class="homme">Homme</label>
+            <input type="radio" class="genre" value="Homme" name="genre" >
+
+            <label class="femme">Femme</label>
+            <input type="radio" class="genre" value="Femme" name="genre" >
+        </div>
+
+        <select name="sport" id="sport-select" required>  
+        </select>   
+
+        <fieldset id="sport2">
+            <legend>Choose your sports:</legend>  
+            <br>
+        </fieldset>  
+        
+        <div class="profile-image">
+            <img id="profile-image" src="" alt="Profile Image">
+        </div>
+    </form>
+    
+    <form id="upload-form" method="post" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*" id="image-input" required />
+        <button type="submit">Upload</button>
+    </form>
+    
+    <input for="main-form" type="submit" class="submitFin">  
+    </div>
+    <script>
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        const id = getCookie("user_id");
+
+        fetch('http://localhost:8081/sports', {
+                mode: 'cors',
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            }).then(response => response.json()).then(data => {
+                for (let i = 0; i < data.length; i++) {
+                let sportName = data[i].Name;
+                let sport = document.createElement("option")
+                sport.innerHTML = sportName
+                sport.value = sportName
+                const checkbox = document.getElementById("sport-select") 
+                checkbox.appendChild(sport)
+                let sport2 = document.createElement("input")
+                let sport2Label = document.createElement("label")
+                sport2.type = "checkbox"
+                sport2.id = sportName
+                sport2.name = "sports"
+                sport2.value = sportName
+                sport2Label.innerHTML = sportName
+                const div = document.createElement("div")
+                const otherSport = document.getElementById("sport2") 
+                div.appendChild(sport2)
+                div.appendChild(sport2Label)
+                otherSport.appendChild(div)
+            }
+        })
+
+        const formImg = document.getElementById('upload-form');
+        const inputFile = document.getElementById('image-input');
+
+        formImg.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const formData = new FormData(formImg);
+
+        const url = `http://localhost:8081/uploadImg?id=` + encodeURIComponent(id);
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Network response was not ok: ${errorText}`);
+            }
+
+            const result = await response.json();
+            const imgElement = document.getElementById('profile-image');
+            imgElement.src = result.image;
+
+            } catch (error) {
+                console.error('Error uploading image:', error);
+            }
+        });
+
+        const mainForm = document.getElementById('main-form');
+        const submitButton = document.querySelector('.submitFin');
+
+        submitButton.addEventListener('click', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(mainForm);
+            const imgElement = document.getElementById('profile-image');
+            formData.append('image', imgElement.src);
+            const id = getCookie("user_id");
+            const url = `http://localhost:8081/welcomeForm?id=` + encodeURIComponent(id);
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Network response was not ok: ${errorText}`);
+                }
+
+                const result = await response.json();
+                console.log('Form submitted successfully:', result);
+
+            } catch (error) {
+                console.error('Error submitting form:', error);
+            }
+        });
+    </script>
+</body>
+</html>

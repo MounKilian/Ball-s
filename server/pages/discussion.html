@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/css/discussion.css">
+</head>
+<body>
+    <div class="banner">
+        <a href="/"><img class="backarrow" src="../static/image/wholecirclearrowgigacombowowamazingreallycool.png" alt="backarrow"></a>
+    </div>
+    <header class="contacts-header">
+        <h1>Contacts</h1>
+    </header>
+    <div class="contacts-container" id="contacts-container">
+        <!-- <a href="/message" class="contact">
+            <img src="/static/images/profile.jpg" alt="Avatar" class="contact-avatar">
+            <div class="contact-info">
+                <span class="contact-name">Nom du Contact 1</span>
+                <span class="contact-last-message">Dernier message...</span>
+            </div>
+        </a> -->
+    </div>
+    <script>
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        let userId = getCookie("user_id")
+    
+        function addContact(user) {
+            const contactContainer = document.getElementById("contacts-container");
+
+            let contact = document.createElement("a");
+            contact.href = "/message"; //mettre id_room
+            contact.className = "contact";
+
+            let img = document.createElement("img");
+            img.src = "/static/images/profile.jpg";  
+            img.alt = "Avatar";
+            img.className = "contact-avatar";
+
+            let infos = document.createElement("div");
+            infos.className = "contact-info";
+
+            let name = document.createElement("span");
+            name.className = "contact-name";
+            fetch('http://localhost:8081/user?id=' + encodeURIComponent(user.UserBID), {
+                mode: 'cors',
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            }).then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error(response.statusText);
+                }
+            }).then(data => {
+                name.textContent = data.Username; 
+            })
+
+            let lastmessage = document.createElement("span");
+            lastmessage.className = "contact-last-message";
+            lastmessage.textContent = "Dernier message..."; 
+
+            infos.appendChild(name);
+            infos.appendChild(lastmessage);
+            contact.appendChild(img);
+            contact.appendChild(infos);
+            contactContainer.appendChild(contact);
+        }
+
+        fetch('http://localhost:8081/matchs', {
+            mode: 'cors',
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }).then(response => response.json()).then(data => {
+            const filteredMatches = data.filter(match => match.UserAID == userId);
+            filteredMatches.forEach(match => {
+                console.log(match.UserAID)
+                addContact(match);
+            });
+        });
+    </script>
+</body>
+</html>

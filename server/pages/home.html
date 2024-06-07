@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rencontre Sportive</title>
+    <link rel="stylesheet" href="../static/css/strike.css">
+</head>
+
+<body>
+    <div id="bg-image">
+        <img src="/static/img/_08095b50-f04c-4ff5-9750-26debab1ba96.jpg" alt="avatar of the person" width="100%"
+            height="100%">
+    </div>
+    <div id="buttonrow">
+        <a href="/profilUser" class="button" id="profile"></a>
+        <a href="/discussion" class="button" id="msg"></a>
+    </div>
+    <div id="cardrow">
+        <a id="miss" class="button"></a>
+        <div id="bgcard" class="card"></div>
+        <a class="card">
+            <div id="name"></div>
+            <div id="ball" class="button" title="football"></div>
+        </a>
+        <a id="strike" class="button"></a>
+    </div>
+
+
+    <script src="/static/js/swipe-animation.js"></script>
+    <script>
+        let bg = document.querySelector("#bg-image>img")
+        let nextcard = document.querySelector("#bgcard")
+        let card = document.querySelector("a.card")
+        let ball = document.querySelector("#ball")
+        let profile = document.querySelector("#profile")
+        let username = document.querySelector("#name")
+        let sports = []
+
+        window.getCookie = function (name) {
+            var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+            if (match) return match[2];
+        }
+
+        if (getCookie("user_id") == 0 || getCookie("user_id") ==  undefined){
+            window.location.href = "/login"
+        }
+
+        let potentials = []
+        let potentials_position = 0
+        fetch("http://localhost:8081/sports")
+            .then(response => response.json())
+            .then(data => {
+                sports = new Map(data.map(c => [c.Name, c.Image]))
+                console.log(sports)
+            })
+
+        fetch("http://localhost:8081/user?id=" + encodeURIComponent(getCookie("user_id")))
+            .then(response => response.json())
+            .then(data => {
+                // console.log(data)
+                profile.href = "/profilUser?id=" + data.ID
+                username.textContent = data.Username
+                profile.style.backgroundImage = `url(${data.Image ? data.Image : "/static/images/avatar.png"})`
+            })
+
+        // Récupérer les potentiels matchs
+        fetch("http://localhost:8081/sort?id=" + encodeURIComponent(getCookie("user_id")))
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                potentials = data.message
+                next()
+            })
+
+        function next() {
+            ismoving = false
+            let currentuser = potentials[potentials_position]
+            let first = currentuser.Image ? currentuser.Image : "/static/images/avatar.png"
+            let second = potentials.length >= (potentials_position + 2) && potentials[potentials_position + 1].Image ? potentials[potentials_position + 1].Image : "/static/images/avatar.png"
+            bg.src = first
+            card.style.backgroundImage = `url(${first})`
+            nextcard.style.backgroundImage = `url(${second})`
+            username.textContent = currentuser.Username
+            sports.has(currentuser.Sport) ? ball.style.backgroundImage = `url(${sports.get(currentuser.Sport)})` : ball.textContent = currentuser.Sport
+            // potentials_position = (potentials_position + 1) % potentials.length
+            potentials_position++
+        }
+
+        function animEnd(strike) {
+            const formData = new FormData();
+            formData.append("id", getCookie("user_id"));
+            formData.append("otherUserId", potentials[potentials_position - 1].ID);
+            formData.append("decision", strike ? "strike" : "miss");
+
+            fetch("http://localhost:8081/strikeOrMiss", {
+                method: "POST",
+                body: formData,
+            }).then(response => response.json()
+            ).then(data => {
+                console.log(data)
+            }).catch(err => {
+                console.error(err)
+            })
+
+            ball.removeAttribute("style")
+            next()
+        }
+    </script>
+    <script src="/static/js/handle-touch.js"></script>
+</body>
+
+</html>

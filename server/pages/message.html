@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/css/message.css">
+</head>
+<body>
+    <div class="header">
+        <header class="chat-header">
+            <a href="/discussion" class="contacts-link">Contacts</a>
+            <div class="profile-info">
+                <img src="../static/images/profile.jpg" alt="Profile Avatar" class="profile-avatar" id="profile-avatar">
+                <span class="profile-name" id="profile-name">Nom du Contact</span>
+            </div>
+        </header>
+    </div>
+    <div class="chat-container">
+        <!-- Les messages de chat seront ajoutés ici -->
+    </div>
+    <form id="message-form">
+        <input type="text" id="message-input" placeholder="Tapez votre message ici...">
+        <button type="submit">Envoyer</button>
+    </form>
+    <script>
+        let ws = new WebSocket('ws://localhost:8081/ws');
+
+        ws.onopen = function() {
+            console.log("WebSocket open");
+        };
+
+        ws.onmessage = function(event) {
+            console.log("Received message:", event.data);
+            displayMessageforOther(event.data);      
+        };
+
+        function sendMessage(message) {
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(message);
+            } else {
+                console.error("WebSocket is not open");
+            }
+        }
+
+        document.getElementById('message-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var messageInput = document.getElementById('message-input');
+            var messageText = messageInput.value.trim();
+            if (messageText === "") {
+                return;
+            }
+            messageInput.value = '';
+            displayMessage(messageText);      
+            sendMessage(messageText);
+        });
+
+        function displayMessageforOther(message) {
+            var messageElement = document.createElement('div');
+            messageElement.className = 'chat-message';
+
+            var bubbleElement = document.createElement('div');
+            bubbleElement.className = 'chat-bubble';
+            bubbleElement.textContent = message;
+            messageElement.appendChild(bubbleElement);
+
+            document.querySelector('.chat-container').appendChild(messageElement);
+            document.querySelector('.chat-container').scrollTop = document.querySelector('.chat-container').scrollHeight; 
+        }
+
+        function displayMessage(message) {
+            var messageElement = document.createElement('divOther');
+            messageElement.className = 'chat-messageOther';
+
+            var bubbleElement = document.createElement('divOther');
+            bubbleElement.className = 'chat-bubbleOther';
+            bubbleElement.textContent = message;
+            messageElement.appendChild(bubbleElement);
+
+            document.querySelector('.chat-container').appendChild(messageElement);
+            document.querySelector('.chat-container').scrollTop = document.querySelector('.chat-container').scrollHeight; 
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inscription</title>
+    <link rel="stylesheet" href="../static/css/register.css" />
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+      }
+      .container {
+        text-align: center;
+        width: 300px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .container h2 {
+        margin-bottom: 20px;
+        font-size: 24px;
+      }
+      .container label,
+      .container input,
+      .container button {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+      }
+      .container input[type="text"],
+      .container input[type="email"],
+      .container input[type="password"] {
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+      }
+      .container input[type="button"],
+      .container button {
+        padding: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        background-color: #333;
+        color: #fff;
+        border-radius: 5px;
+      }
+      .container button {
+        background-color: #555;
+      }
+      .container .signup-link {
+        margin-top: 10px;
+        font-size: 14px;
+      }
+    </style>
+    <script>
+      function validateForm() {
+        var password = document.getElementById("password").value;
+        var confirmPassword = document.getElementById("confirmPassword").value;
+
+        if (password !== confirmPassword) {
+          alert("Les mots de passe ne correspondent pas.");
+          return false;
+        }
+        return true;
+      }
+
+      function registerUser() {
+        if (!validateForm()) {
+          return;
+        }
+
+        var formData = {
+          username: document.getElementById("username").value,
+          email: document.getElementById("email").value,
+          password: document.getElementById("password").value,
+        };
+
+        fetch("/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Erreur lors de la soumission du formulaire.");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // Gérer la réponse du serveur ici
+            console.log(data);
+          })
+          .catch((error) => {
+            console.error("Erreur:", error);
+          });
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Inscription</h2>
+      <form onsubmit="return false;">
+        <label for="username">Nom d'utilisateur:</label>
+        <input type="text" id="username" name="username" required />
+        <label for="email">Adresse email:</label>
+        <input type="email" id="email" name="email" required />
+        <label for="password">Mot de passe:</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          required
+          pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+          title="Le mot de passe doit contenir au moins 8 caractères, avec au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial."
+        />
+        <label for="confirmPassword">Confirmer le mot de passe:</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          name="confirmPassword"
+          required
+        />
+        <input type="button" value="S'inscrire" onclick="registerUser()" />
+      </form>
+      <button onclick="window.location.href='/login'">
+        Connectez-vous ici
+      </button>
+    </div>
+  </body>
+</html>
