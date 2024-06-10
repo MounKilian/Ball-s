@@ -1,4 +1,3 @@
-// routes.go
 package api
 
 import "net/http"
@@ -14,7 +13,9 @@ func SetupRoutes() {
 	http.HandleFunc("/post/create", createPost)
 	http.HandleFunc("/post/update", updatePost)
 	http.HandleFunc("/post/delete", deletePost)
-	http.HandleFunc("/posts", getPosts)
+	http.HandleFunc("/post/like", likePost)
+	http.HandleFunc("/post/comment", commentPost)
+	http.HandleFunc("/posts", getPost)
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 }

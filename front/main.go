@@ -22,6 +22,10 @@ func main() {
 		http.ServeFile(w, r, "web/login.html")
 	})
 
+	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "web/register.html")
+	})
+
 	log.Println("Starting frontend server on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

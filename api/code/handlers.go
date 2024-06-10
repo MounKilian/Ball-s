@@ -27,24 +27,6 @@ type User struct {
 	Password string `json:"password,omitempty"`
 }
 
-// SetupRoutes configure les routes de l'API
-// func SetupRoutes(database *sql.DB) {
-// 	db = database
-
-// 	http.HandleFunc("/register", serveRegisterForm)
-// 	http.HandleFunc("/users", GetUsers)
-// 	http.HandleFunc("/login", login)
-// 	http.HandleFunc("/createUser", createUser)
-// 	http.HandleFunc("/profile", profile)
-// 	http.HandleFunc("/updateProfile", updateProfile)
-// 	http.HandleFunc("/deleteUser", deleteUser)
-// 	http.HandleFunc("/home_connected", homeConnected)
-// 	http.HandleFunc("/createPost", createPost)
-// 	http.HandleFunc("/updatePost", updatePost)
-// 	http.HandleFunc("/deletePost", deletePost)
-// 	http.HandleFunc("/posts", getPosts)
-// }
-
 func serveRegisterForm(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		http.ServeFile(w, r, "web/register.html")
@@ -383,7 +365,7 @@ func deletePost(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/home_connected?id="+userID, http.StatusSeeOther)
 }
 
-func getPosts(w http.ResponseWriter, r *http.Request) {
+func getPost(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query(`
 			SELECT posts.id, posts.user_id, users.name, posts.content, posts.created_at
 			FROM posts
@@ -414,4 +396,55 @@ func getPosts(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonResponse)
+}
+
+func likePost(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		return
+	}
+
+	postID := r.FormValue("post_id")
+	userID := r.FormValue("user_id")
+
+	stmt, err := db.Prepare("INSERT INTO likes (post_id, user_id) VALUES (?, ?)")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(postID, userID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+}
+
+func commentPost(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		return
+	}
+
+	postID := r.FormValue("post_id")
+	userID := r.FormValue("user_id")
+	content := r.FormValue("content")
+
+	stmt, err := db.Prepare("INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(postID, userID, content)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
 }
