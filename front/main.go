@@ -14,12 +14,23 @@ func main() {
 
 	})
 
-	http.HandleFunc("/profil", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/profile", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "web/profile.html")
 	})
 
 	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "web/login.html")
+
+		if r.Method == http.MethodGet {
+			http.ServeFile(w, r, "web/login.html")
+			return
+		} else if r.Method != http.MethodPost {
+			http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+			return
+		}
+	})
+
+	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "web/register.html")
 	})
 
 	log.Println("Starting frontend server on :8080")
