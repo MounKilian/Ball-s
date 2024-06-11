@@ -4,13 +4,12 @@ import (
 	"database/sql"
 	"encoding/json"
 	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 
 	"golang.org/x/crypto/bcrypt"
 )
-
-var db *sql.DB
 
 type Post struct {
 	ID        int    `json:"id"`
@@ -63,9 +62,10 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonResponse)
 }
 
-func login(w http.ResponseWriter, r *http.Request) {
+func Login(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method == http.MethodGet {
-		http.ServeFile(w, r, "web/login.html")
+		//http.ServeFile(w, r, "web/login.html")
 		return
 	} else if r.Method != http.MethodPost {
 		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
@@ -110,16 +110,21 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 
+	log.Println("Creating user:", name, email)
 	if name == "" || email == "" || password == "" {
 		http.Error(w, "Le nom, l'email et le mot de passe sont requis", http.StatusBadRequest)
 		return
 	}
+
+	log.Println("testtttttttttt 1")
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	log.Println("testtttttttttt 2")
 
 	stmt, err := db.Prepare("INSERT INTO users(name, email, password) VALUES(?, ?, ?)")
 	if err != nil {
@@ -128,16 +133,21 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	}
 	defer stmt.Close()
 
+	log.Println("testtttttttttt 3")
+
 	_, err = stmt.Exec(name, email, string(hashedPassword))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	log.Println("testtttttttttt 4")
+	log.Println("User created successfully:", name, email)
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
 func profile(w http.ResponseWriter, r *http.Request) {
+
 	id := r.URL.Query().Get("id")
 	if id == "" {
 		http.Error(w, "ID utilisateur requis", http.StatusBadRequest)
@@ -169,6 +179,7 @@ func profile(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateProfile(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
 		return
@@ -244,6 +255,7 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func homeConnected(w http.ResponseWriter, r *http.Request) {
+
 	id := r.URL.Query().Get("id")
 	if id == "" {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -275,6 +287,7 @@ func homeConnected(w http.ResponseWriter, r *http.Request) {
 }
 
 func createPost(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
 		return
@@ -305,6 +318,7 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func updatePost(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
 		return
@@ -336,6 +350,7 @@ func updatePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func deletePost(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
 		return
@@ -365,7 +380,8 @@ func deletePost(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/home_connected?id="+userID, http.StatusSeeOther)
 }
 
-func getPost(w http.ResponseWriter, r *http.Request) {
+func getPosts(w http.ResponseWriter, r *http.Request) {
+
 	rows, err := db.Query(`
 			SELECT posts.id, posts.user_id, users.name, posts.content, posts.created_at
 			FROM posts
