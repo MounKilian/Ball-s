@@ -24,7 +24,18 @@ func main() {
 	})
 
 	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "web/login.html")
+
+		if r.Method == http.MethodGet {
+			http.ServeFile(w, r, "web/login.html")
+			return
+		} else if r.Method != http.MethodPost {
+			http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+			return
+		}
+	})
+
+	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "web/register.html")
 	})
 
 	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
