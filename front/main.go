@@ -14,6 +14,11 @@ func main() {
 
 	})
 
+	http.HandleFunc("/home", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "web/home_connected.html")
+
+	})
+
 	http.HandleFunc("/profil", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "web/profile.html")
 	})
@@ -26,6 +31,15 @@ func main() {
 		http.ServeFile(w, r, "web/register.html")
 	})
 
+	http.HandleFunc("/post", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "web/post.html")
+	})
+
 	log.Println("Starting frontend server on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
+
+	log.Println("Serveur front-end démarré sur le port 8080")
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatal(err)
+	}
 }

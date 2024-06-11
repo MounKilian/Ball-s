@@ -66,6 +66,12 @@ body {
     color: #888;
 }
 
+.form-text {
+    color: #ccc;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
 .button {
     width: 100%;
     padding: 10px;

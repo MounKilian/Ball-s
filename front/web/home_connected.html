@@ -53,7 +53,7 @@
                     <button type="submit" class="create-post-button">Créer un post</button>
                 </div>
             </form>
-            <div class="posts">
+            <div class="posts" id="posts">
                 <!-- Les posts seront chargés ici -->
             </div>
         </main>
@@ -80,5 +80,30 @@
     </p>
   </footer>
 </div>
+<script>
+    async function loadPosts() {
+        try {
+            const response = await fetch('/api/post');
+            const posts = await response.json();
+            const postsContainer = document.getElementById('post');
+
+            postsContainer.innerHTML = '';
+
+            posts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.classList.add('post');
+                postElement.innerHTML = `
+                    <h3>${post.title}</h3>
+                    <p>${post.content}</p>
+                `;
+                postsContainer.appendChild(postElement);
+            });
+        } catch (error) {
+            console.error('Error loading posts:', error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadPosts);
+</script>
 </body>
 </html>

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -110,19 +111,26 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 
+	log.Println("Received values: Name:", name, ", Email:", email)
+
 	if name == "" || email == "" || password == "" {
+		log.Println("Missing values: Name:", name, " Email:", email, " Password:", password)
 		http.Error(w, "Le nom, l'email et le mot de passe sont requis", http.StatusBadRequest)
 		return
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
+		log.Println("Error hashing password:", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	log.Println("Password hashed successfully")
+
 	stmt, err := db.Prepare("INSERT INTO users(name, email, password) VALUES(?, ?, ?)")
 	if err != nil {
+		log.Println("Error preparing statement:", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -130,12 +138,16 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 
 	_, err = stmt.Exec(name, email, string(hashedPassword))
 	if err != nil {
+		log.Println("Error executing statement:", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	log.Println("User created successfully")
+
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
+
 
 func profile(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
