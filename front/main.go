@@ -38,10 +38,6 @@ func main() {
 		http.ServeFile(w, r, "web/register.html")
 	})
 
-	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "web/register.html")
-	})
-
 	http.HandleFunc("/post", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "web/post.html")
 	})
