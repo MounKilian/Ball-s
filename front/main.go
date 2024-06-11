@@ -19,7 +19,7 @@ func main() {
 
 	})
 
-	http.HandleFunc("/profil", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/profile", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "web/profile.html")
 	})
 

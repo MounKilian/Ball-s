@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Motorum - Accueil</title>
     <link rel="stylesheet" href="/static/home_connected.css">
+    <style>
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #f8f9fa; /* Modifier cette couleur pour correspondre à celle du site */
+            text-align: center;
+            padding: 10px 0;
+            box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -36,13 +47,13 @@
                 </div>
             </div>
             <form id="postForm" action="/post/create" method="post">
-                <input type="hidden" name="user_id" value="{{.ID}}">
+                <input type="hidden" name="user_id" id="userId" value="{{.ID}}">
                 <div class="post-box">
                     <textarea name="content" placeholder="Partageons ce qui se passe dans votre esprit..."></textarea>
                     <button type="submit" class="create-post-button">Créer un post</button>
                 </div>
             </form>
-            <div class="posts" id="posts">
+            <div class="posts">
                 <!-- Les posts seront chargés ici -->
             </div>
         </main>
@@ -70,29 +81,13 @@
   </footer>
 </div>
 <script>
-    async function loadPosts() {
-        try {
-            const response = await fetch('/api/post');
-            const posts = await response.json();
-            const postsContainer = document.getElementById('post');
-
-            postsContainer.innerHTML = '';
-
-            posts.forEach(post => {
-                const postElement = document.createElement('div');
-                postElement.classList.add('post');
-                postElement.innerHTML = `
-                    <h3>${post.title}</h3>
-                    <p>${post.content}</p>
-                `;
-                postsContainer.appendChild(postElement);
-            });
-        } catch (error) {
-            console.error('Error loading posts:', error);
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('id');
+        if (userId) {
+            document.getElementById('userId').value = userId;
         }
-    }
-
-    document.addEventListener('DOMContentLoaded', loadPosts);
+    });
 </script>
 </body>
 </html>
